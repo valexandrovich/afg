@@ -1,0 +1,11 @@
+spring:
+  datasource:
+#    url: jdbc:postgresql://localhost:5432/af_guard_db
+    url: jdbc:postgresql://192.168.50.7:5410/af_guard_db
+    username: afg_app
+    password: 3211
+  jpa:
+    hibernate:
+      ddl-auto: none
+server:
+  port: 9001
