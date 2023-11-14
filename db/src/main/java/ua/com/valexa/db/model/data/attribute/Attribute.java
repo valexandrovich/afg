@@ -12,7 +12,7 @@ import java.util.UUID;
 @DiscriminatorColumn(name = "type", discriminatorType = DiscriminatorType.STRING)
 public abstract class Attribute {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+//    @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
     @Column(name = "type", insertable = false, updatable = false)
     private String type;

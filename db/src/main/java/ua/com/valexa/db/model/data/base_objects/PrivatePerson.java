@@ -37,11 +37,7 @@ public class PrivatePerson extends BaseObject {
 
     @Override
     public String toString() {
-        return "PrivatePerson{" + '\n' +
-                "nameLinks=" + nameLinks + '\n' +
-                "birthdayLinks=" + birthdayLinks + '\n' +
-                "innLinks=" + innLinks + '\n' +
-                '}';
+        return getId().toString();
     }
 
     @Override

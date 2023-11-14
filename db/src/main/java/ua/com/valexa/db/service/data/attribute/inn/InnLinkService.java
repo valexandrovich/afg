@@ -13,7 +13,7 @@ public class InnLinkService {
     @Autowired
     InnLinkRepository innLinkRepository;
 
-    public InnLink saveInnLink(InnLink innLink) {
+    public InnLink save(InnLink innLink) {
         try {
             return innLinkRepository.save(innLink);
         } catch (DataIntegrityViolationException e) {
@@ -25,5 +25,9 @@ public class InnLinkService {
             return storedIl.orElse(null);
         }
         // Other exceptions can be caught and handled as well
+    }
+
+    public InnLink save2(InnLink innLink) {
+        return innLinkRepository.save(innLink);
     }
 }

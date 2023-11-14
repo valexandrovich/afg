@@ -4,10 +4,12 @@ import jakarta.persistence.*;
 import lombok.Data;
 import ua.com.valexa.db.model.data.enums.LanguageCode;
 import ua.com.valexa.db.model.data.attribute.Attribute;
+import ua.com.valexa.db.utils.NoVowelsHashUtils;
 
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 
 @Entity
 @Table(schema = "data", name = "person_name", indexes = {
@@ -61,5 +63,13 @@ public class PersonName extends Attribute {
     @Override
     public int hashCode() {
         return Objects.hash(lastName, firstName, patronymicName, languageCode);
+    }
+
+    public void generateNoVolwesHash(){
+        this.noVowelsHash =  NoVowelsHashUtils.calcNoVowelsHash(this);
+    }
+
+    public void generateId(){
+        setId(UUID.nameUUIDFromBytes(toString().getBytes()));
     }
 }

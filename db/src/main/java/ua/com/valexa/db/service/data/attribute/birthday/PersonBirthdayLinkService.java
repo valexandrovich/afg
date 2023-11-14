@@ -13,7 +13,7 @@ public class PersonBirthdayLinkService {
     @Autowired
     PersonBirthdayLinkRepository personBirthdayLinkRepository;
 
-    public BirthdayPersonLink savePersonBirthdayLink(BirthdayPersonLink birthdayPersonLink) {
+    public BirthdayPersonLink save(BirthdayPersonLink birthdayPersonLink) {
         try {
             return personBirthdayLinkRepository.save(birthdayPersonLink);
         } catch (DataIntegrityViolationException e) {
@@ -24,6 +24,9 @@ public class PersonBirthdayLinkService {
             );
             return storedPbl.orElse(null);
         }
-        // Other exceptions can be caught and handled as well
+    }
+
+    public BirthdayPersonLink save2(BirthdayPersonLink birthdayPersonLink) {
+       return personBirthdayLinkRepository.save(birthdayPersonLink);
     }
 }

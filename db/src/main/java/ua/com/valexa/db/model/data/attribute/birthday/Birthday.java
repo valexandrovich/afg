@@ -6,6 +6,7 @@ import ua.com.valexa.db.model.data.attribute.Attribute;
 
 import java.time.LocalDate;
 import java.util.Objects;
+import java.util.UUID;
 
 @Entity
 @Table(schema = "data", name = "birthday", uniqueConstraints = {
@@ -36,5 +37,9 @@ public class Birthday extends Attribute {
     @Override
     public int hashCode() {
         return Objects.hash(birthday);
+    }
+
+    public void generateId(){
+        setId(UUID.nameUUIDFromBytes(toString().getBytes()));
     }
 }

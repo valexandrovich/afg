@@ -19,7 +19,7 @@ import java.util.UUID;
 @Data
 public class InnLink {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+//    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
     private UUID id;
     @ManyToOne
@@ -52,4 +52,9 @@ public class InnLink {
     public int hashCode() {
         return Objects.hash(privatePerson, inn, source);
     }
+
+    public void generateId(){
+        setId(UUID.nameUUIDFromBytes(toString().getBytes()));
+    }
+
 }

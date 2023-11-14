@@ -5,6 +5,7 @@ import lombok.Data;
 import ua.com.valexa.db.model.data.attribute.Attribute;
 
 import java.util.Objects;
+import java.util.UUID;
 
 @Entity
 @Table(schema = "data", name = "inn", uniqueConstraints = {
@@ -32,5 +33,9 @@ public class Inn extends Attribute {
     @Override
     public int hashCode() {
         return Objects.hash(code);
+    }
+
+    public void generateId(){
+        setId(UUID.nameUUIDFromBytes(toString().getBytes()));
     }
 }

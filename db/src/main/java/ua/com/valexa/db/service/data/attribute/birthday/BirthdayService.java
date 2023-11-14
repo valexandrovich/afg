@@ -13,7 +13,7 @@ public class BirthdayService {
     @Autowired
     BirthdayRepository birthdayRepository;
 
-    public Birthday saveDates(Birthday birthday) {
+    public Birthday save(Birthday birthday) {
         try {
             return birthdayRepository.save(birthday);
         } catch (DataIntegrityViolationException e) {
@@ -22,5 +22,9 @@ public class BirthdayService {
             );
             return storedDates.orElse(null);
         }
+    }
+
+    public Birthday save2(Birthday birthday) {
+      return birthdayRepository.save(birthday);
     }
 }

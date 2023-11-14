@@ -12,7 +12,7 @@ import java.util.UUID;
 @Data
 public abstract class BaseObject {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+//    @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
     @Column(name = "type", insertable = false, updatable = false)
     private String type;

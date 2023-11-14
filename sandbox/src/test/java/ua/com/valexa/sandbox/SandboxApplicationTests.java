@@ -68,11 +68,11 @@ class SandboxApplicationTests {
         pn.setPatronymicName("");
         pn.setLanguageCode(LanguageCode.UA);
         pn.setNoVowelsHash(NoVowelsHashUtils.calcNoVowelsHash(pn));
-        pn = personNameService.savePersonName(pn);
+        pn = personNameService.save(pn);
 
         Birthday birthday = new Birthday();
         birthday.setBirthday(LocalDate.of(1994,1,23));
-        birthday = birthdayService.saveDates(birthday);
+        birthday = birthdayService.save(birthday);
 
         BirthdayPersonLink pbl = new BirthdayPersonLink();
         pbl.setPrivatePerson(p);
@@ -80,18 +80,18 @@ class SandboxApplicationTests {
         pbl.setSource("UNIT");
         pbl.setCreatedAt(LocalDateTime.now());
 
-        pbl = personBirthdayLinkService.savePersonBirthdayLink(pbl);
+        pbl = personBirthdayLinkService.save(pbl);
 
         Inn inn = new Inn();
         inn.setCode("3435603818");
-        inn = innService.saveInn(inn);
+        inn = innService.save(inn);
 
         InnLink il = new InnLink();
         il.setInn(inn);
         il.setPrivatePerson(p);
         il.setSource("UNIT");
         il.setCreatedAt(LocalDateTime.now());
-        il = innLinkService.saveInnLink(il);
+        il = innLinkService.save(il);
 
 
 
@@ -102,7 +102,7 @@ class SandboxApplicationTests {
         pnl.setPrivatePerson(p);
         pnl.setPersonName(pn);
         pnl.setSource("UNIT2");
-        pnl = personNameLinkService.savePersonNameLink(pnl);
+        pnl = personNameLinkService.save(pnl);
 
         Optional<PrivatePerson> p3 = privatePersonRepository.findById(p.getId());
         System.out.println(p3);

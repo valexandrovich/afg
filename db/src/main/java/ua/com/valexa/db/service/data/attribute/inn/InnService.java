@@ -13,7 +13,7 @@ public class InnService {
         @Autowired
         InnRepository innRepository;
 
-        public Inn saveInn(Inn inn) {
+        public Inn save(Inn inn) {
             try {
                 return innRepository.save(inn);
             } catch (DataIntegrityViolationException e) {
@@ -23,4 +23,8 @@ public class InnService {
                 return storedInn.orElse(null);
             }
         }
+
+    public Inn save2(Inn inn) {
+       return innRepository.save(inn);
+    }
 }

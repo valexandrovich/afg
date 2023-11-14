@@ -2,18 +2,10 @@ package ua.com.valexa.enricher.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ua.com.valexa.db.model.data.attribute.address.Address;
-import ua.com.valexa.db.model.data.attribute.address.AddressPersonLink;
-import ua.com.valexa.db.model.data.attribute.address_simple.AddressSimple;
-import ua.com.valexa.db.model.data.attribute.address_simple.AddressSimplePersonLink;
-import ua.com.valexa.db.model.data.attribute.birthplace.Birthplace;
-import ua.com.valexa.db.model.data.attribute.birthplace.BithplaceLink;
 import ua.com.valexa.db.model.data.attribute.inn.Inn;
 import ua.com.valexa.db.model.data.attribute.inn.InnLink;
 import ua.com.valexa.db.model.data.attribute.birthday.Birthday;
 import ua.com.valexa.db.model.data.attribute.birthday.BirthdayPersonLink;
-import ua.com.valexa.db.model.data.attribute.local_passport.LocalPassport;
-import ua.com.valexa.db.model.data.attribute.local_passport.LocalPassportLink;
 import ua.com.valexa.db.model.data.attribute.person_name.PersonName;
 import ua.com.valexa.db.model.data.attribute.person_name.PersonNameLink;
 import ua.com.valexa.db.model.data.base_objects.PrivatePerson;
@@ -40,6 +32,7 @@ import ua.com.valexa.db.utils.NoVowelsHashUtils;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Service
@@ -110,169 +103,196 @@ public class PrivatePersonStageService {
     public void enrichStageRow(PrivatePersonStageRow row) {
         PrivatePerson candidate = findCandidate(row);
 
-        if (row.hasUaName()){
-            PersonName pnUa = saveName(
-                    row.getLastNameUa(),
-                    row.getFirstNameUa(),
-                    row.getPatronymicNameUa(),
-                    LanguageCode.UA
-            );
+        CompletableFuture<Void> uaNameTask = null;
+        CompletableFuture<Void> ruNameTask = null;
+        CompletableFuture<Void> enNameTask = null;
 
-            PersonNameLink personNameLink = new PersonNameLink();
-            personNameLink.setSource(row.getSource());
-            personNameLink.setCreatedAt(LocalDateTime.now());
-            personNameLink.setPrivatePerson(candidate);
-            personNameLink.setPersonName(pnUa);
-            personNameLinkService.savePersonNameLink(personNameLink);
+        if (row.hasUaName()){
+            uaNameTask = CompletableFuture.runAsync(() -> {
+                PersonName pnUa = saveName(
+                        row.getLastNameUa(),
+                        row.getFirstNameUa(),
+                        row.getPatronymicNameUa(),
+                        LanguageCode.UA
+                );
+
+                PersonNameLink personNameLinkUa = new PersonNameLink();
+                personNameLinkUa.setSource(row.getSource());
+                personNameLinkUa.setCreatedAt(LocalDateTime.now());
+                personNameLinkUa.setPrivatePerson(candidate);
+                personNameLinkUa.setPersonName(pnUa);
+                personNameLinkUa.generateId();
+                personNameLinkService.save2(personNameLinkUa);
+            });
+
 
         }
 
         if (row.hasRuName()){
-            PersonName pnRu = saveName(
-                    row.getLastNameRu(),
-                    row.getFirstNameRu(),
-                    row.getPatronymicNameRu(),
-                    LanguageCode.RU
-            );
+            ruNameTask = CompletableFuture.runAsync(()->{
+                PersonName pnRu = saveName(
+                        row.getLastNameRu(),
+                        row.getFirstNameRu(),
+                        row.getPatronymicNameRu(),
+                        LanguageCode.RU
+                );
 
-            PersonNameLink personNameLink = new PersonNameLink();
-            personNameLink.setSource(row.getSource());
-            personNameLink.setCreatedAt(LocalDateTime.now());
-            personNameLink.setPrivatePerson(candidate);
-            personNameLink.setPersonName(pnRu);
-            personNameLinkService.savePersonNameLink(personNameLink);
+                PersonNameLink personNameLinkRu = new PersonNameLink();
+                personNameLinkRu.setSource(row.getSource());
+                personNameLinkRu.setCreatedAt(LocalDateTime.now());
+                personNameLinkRu.setPrivatePerson(candidate);
+                personNameLinkRu.setPersonName(pnRu);
+                personNameLinkRu.generateId();
+                personNameLinkService.save2(personNameLinkRu);
+            });
+
         }
 
         if (row.hasEnName()){
-            PersonName pnEn = saveName(
-                    row.getLastNameEn(),
-                    row.getFirstNameEn(),
-                    row.getPatronymicNameEn(),
-                    LanguageCode.EN
-            );
+            enNameTask = CompletableFuture.runAsync(()->{
+                PersonName pnEn = saveName(
+                        row.getLastNameEn(),
+                        row.getFirstNameEn(),
+                        row.getPatronymicNameEn(),
+                        LanguageCode.EN
+                );
 
-            PersonNameLink personNameLink = new PersonNameLink();
-            personNameLink.setSource(row.getSource());
-            personNameLink.setCreatedAt(LocalDateTime.now());
-            personNameLink.setPrivatePerson(candidate);
-            personNameLink.setPersonName(pnEn);
-            personNameLinkService.savePersonNameLink(personNameLink);
+                PersonNameLink personNameLinkEn = new PersonNameLink();
+                personNameLinkEn.setSource(row.getSource());
+                personNameLinkEn.setCreatedAt(LocalDateTime.now());
+                personNameLinkEn.setPrivatePerson(candidate);
+                personNameLinkEn.setPersonName(pnEn);
+                personNameLinkEn.generateId();
+                personNameLinkService.save2(personNameLinkEn);
+            });
         }
+
+        CompletableFuture<Void> allTasks = CompletableFuture.allOf(
+                uaNameTask != null ? uaNameTask : CompletableFuture.completedFuture(null),
+                ruNameTask != null ? ruNameTask : CompletableFuture.completedFuture(null),
+                enNameTask != null ? enNameTask : CompletableFuture.completedFuture(null)
+        );
+
+        allTasks.join();
 
         if (row.getBirthday() != null){
             Birthday birthday = new Birthday();
             birthday.setBirthday(row.getBirthday());
-            birthday = birthdayService.saveDates(birthday);
+            birthday.generateId();
+            birthday = birthdayService.save2(birthday);
 
             BirthdayPersonLink pbl = new BirthdayPersonLink();
             pbl.setBirthday(birthday);
             pbl.setSource(row.getSource());
             pbl.setCreatedAt(LocalDateTime.now());
             pbl.setPrivatePerson(candidate);
-            personBirthdayLinkService.savePersonBirthdayLink(pbl);
+            pbl.generateId();
+            personBirthdayLinkService.save2(pbl);
         }
 
         if (row.getInn() != null && !row.getInn().isEmpty()){
             Inn inn = new Inn();
             inn.setCode(row.getInn());
-            inn = innService.saveInn(inn);
+            inn.generateId();
+            inn = innService.save2(inn);
 
             InnLink il = new InnLink();
             il.setCreatedAt(LocalDateTime.now());
             il.setSource(row.getSource());
             il.setPrivatePerson(candidate);
             il.setInn(inn);
-            innLinkService.saveInnLink(il);
+            il.generateId();
+            innLinkService.save2(il);
 
         }
 
-        if (row.getBirthplace() != null && !row.getBirthplace().isEmpty()){
-            Birthplace birthplace = new Birthplace();
-            birthplace.setBirthplace(row.getBirthplace());
-            birthplace = birthplaceService.save(birthplace);
-
-            BithplaceLink bithplaceLink = new BithplaceLink();
-            bithplaceLink.setCreatedAt(LocalDateTime.now());
-            bithplaceLink.setSource(row.getSource());
-            bithplaceLink.setPrivatePerson(candidate);
-            bithplaceLink.setBirthplace(birthplace);
-            birthplaceLinkService.save(bithplaceLink);
-        }
-
-        if (row.getAddressSimple() != null && !row.getAddressSimple().isEmpty()){
-            AddressSimple addressSimple = new AddressSimple();
-            addressSimple.setAddress(row.getAddressSimple());
-            addressSimple = addressSimpleService.save(addressSimple);
-
-            AddressSimplePersonLink addressSimplePersonLink = new AddressSimplePersonLink();
-            addressSimplePersonLink.setSource(row.getSource());
-            addressSimplePersonLink.setCreatedAt(LocalDateTime.now());
-            addressSimplePersonLink.setPrivatePerson(candidate);
-            addressSimplePersonLink.setAddressSimple(addressSimple);
-            addressSimplePersonLinkService.save(addressSimplePersonLink);
-        }
-
-
-        if (
-                (row.getAddressCountry() != null && !row.getAddressCountry().isEmpty()) ||
-                (row.getAddressRegion() != null && !row.getAddressRegion().isEmpty()) ||
-                (row.getAddressCounty() != null && !row.getAddressCounty().isEmpty()) ||
-                (row.getAddressCityType() != null && !row.getAddressCityType().isEmpty()) ||
-                (row.getAddressCity() != null && !row.getAddressCity().isEmpty()) ||
-                (row.getAddressStreetType() != null && !row.getAddressStreetType().isEmpty()) ||
-                (row.getAddressStreet() != null && !row.getAddressStreet().isEmpty()) ||
-                (row.getAddressBuildingNumber() != null && !row.getAddressBuildingNumber().isEmpty()) ||
-                (row.getAddressBuildingLetter() != null && !row.getAddressBuildingLetter().isEmpty()) ||
-                (row.getAddressBuildingPart() != null && !row.getAddressBuildingPart().isEmpty()) ||
-                (row.getAddressApartment() != null && !row.getAddressApartment().isEmpty())
-        ){
-            Address address = new Address();
-            address.setCountry(row.getAddressCountry());
-            address.setRegion(row.getAddressRegion());
-            address.setCounty(row.getAddressCounty());
-            address.setCityType(row.getAddressCityType());
-            address.setCity(row.getAddressCity());
-            address.setStreetType(row.getAddressStreetType());
-            address.setStreet(row.getAddressStreet());
-            address.setBuildingNumber(row.getAddressBuildingNumber());
-            address.setBuildingLetter(row.getAddressBuildingLetter());
-            address.setBuildingPart(row.getAddressBuildingPart());
-            address.setApartment(row.getAddressApartment());
-
-            address = addressService.save(address);
-
-
-            AddressPersonLink addressPersonLink = new AddressPersonLink();
-            addressPersonLink.setAddress(address);
-            addressPersonLink.setPrivatePerson(candidate);
-            addressPersonLink.setCreatedAt(LocalDateTime.now());
-            addressPersonLink.setSource(row.getSource());
-            addressPersonLinkService.save(addressPersonLink);
-        }
-
-
-        if (
-                (row.getLocalPassportSerial() != null && !row.getLocalPassportSerial().isEmpty()) &&
-                        (row.getLocalPassportNumber() != null && !row.getLocalPassportNumber().isEmpty())
-        ){
-
-            System.out.println("SAVING LOCAL PASS");
-
-            LocalPassport localPassport = new LocalPassport();
-            localPassport.setSerial(row.getLocalPassportSerial());
-            localPassport.setNumber(row.getLocalPassportNumber());
-            localPassport.setIssuedAt(row.getLocalPassportIssueDate());
-            localPassport.setIssuerName(row.getLocalPassportIssuerName());
-            localPassport = localPassportService.save(localPassport);
-
-            LocalPassportLink localPassportLink = new LocalPassportLink();
-            localPassportLink.setLocalPassport(localPassport);
-            localPassportLink.setPrivatePerson(candidate);
-            localPassportLink.setCreatedAt(LocalDateTime.now());
-            localPassportLink.setSource(row.getSource());
-            localPassportLinkService.save(localPassportLink);
-
-        }
+//        if (row.getBirthplace() != null && !row.getBirthplace().isEmpty()){
+//            Birthplace birthplace = new Birthplace();
+//            birthplace.setBirthplace(row.getBirthplace());
+//            birthplace = birthplaceService.save(birthplace);
+//
+//            BithplaceLink bithplaceLink = new BithplaceLink();
+//            bithplaceLink.setCreatedAt(LocalDateTime.now());
+//            bithplaceLink.setSource(row.getSource());
+//            bithplaceLink.setPrivatePerson(candidate);
+//            bithplaceLink.setBirthplace(birthplace);
+//            birthplaceLinkService.save(bithplaceLink);
+//        }
+//
+//        if (row.getAddressSimple() != null && !row.getAddressSimple().isEmpty()){
+//            AddressSimple addressSimple = new AddressSimple();
+//            addressSimple.setAddress(row.getAddressSimple());
+//            addressSimple = addressSimpleService.save(addressSimple);
+//
+//            AddressSimplePersonLink addressSimplePersonLink = new AddressSimplePersonLink();
+//            addressSimplePersonLink.setSource(row.getSource());
+//            addressSimplePersonLink.setCreatedAt(LocalDateTime.now());
+//            addressSimplePersonLink.setPrivatePerson(candidate);
+//            addressSimplePersonLink.setAddressSimple(addressSimple);
+//            addressSimplePersonLinkService.save(addressSimplePersonLink);
+//        }
+//
+//
+//        if (
+//                (row.getAddressCountry() != null && !row.getAddressCountry().isEmpty()) ||
+//                (row.getAddressRegion() != null && !row.getAddressRegion().isEmpty()) ||
+//                (row.getAddressCounty() != null && !row.getAddressCounty().isEmpty()) ||
+//                (row.getAddressCityType() != null && !row.getAddressCityType().isEmpty()) ||
+//                (row.getAddressCity() != null && !row.getAddressCity().isEmpty()) ||
+//                (row.getAddressStreetType() != null && !row.getAddressStreetType().isEmpty()) ||
+//                (row.getAddressStreet() != null && !row.getAddressStreet().isEmpty()) ||
+//                (row.getAddressBuildingNumber() != null && !row.getAddressBuildingNumber().isEmpty()) ||
+//                (row.getAddressBuildingLetter() != null && !row.getAddressBuildingLetter().isEmpty()) ||
+//                (row.getAddressBuildingPart() != null && !row.getAddressBuildingPart().isEmpty()) ||
+//                (row.getAddressApartment() != null && !row.getAddressApartment().isEmpty())
+//        ){
+//            Address address = new Address();
+//            address.setCountry(row.getAddressCountry());
+//            address.setRegion(row.getAddressRegion());
+//            address.setCounty(row.getAddressCounty());
+//            address.setCityType(row.getAddressCityType());
+//            address.setCity(row.getAddressCity());
+//            address.setStreetType(row.getAddressStreetType());
+//            address.setStreet(row.getAddressStreet());
+//            address.setBuildingNumber(row.getAddressBuildingNumber());
+//            address.setBuildingLetter(row.getAddressBuildingLetter());
+//            address.setBuildingPart(row.getAddressBuildingPart());
+//            address.setApartment(row.getAddressApartment());
+//
+//            address = addressService.save(address);
+//
+//
+//            AddressPersonLink addressPersonLink = new AddressPersonLink();
+//            addressPersonLink.setAddress(address);
+//            addressPersonLink.setPrivatePerson(candidate);
+//            addressPersonLink.setCreatedAt(LocalDateTime.now());
+//            addressPersonLink.setSource(row.getSource());
+//            addressPersonLinkService.save(addressPersonLink);
+//        }
+//
+//
+//        if (
+//                (row.getLocalPassportSerial() != null && !row.getLocalPassportSerial().isEmpty()) &&
+//                        (row.getLocalPassportNumber() != null && !row.getLocalPassportNumber().isEmpty())
+//        ){
+//
+//            System.out.println("SAVING LOCAL PASS");
+//
+//            LocalPassport localPassport = new LocalPassport();
+//            localPassport.setSerial(row.getLocalPassportSerial());
+//            localPassport.setNumber(row.getLocalPassportNumber());
+//            localPassport.setIssuedAt(row.getLocalPassportIssueDate());
+//            localPassport.setIssuerName(row.getLocalPassportIssuerName());
+//            localPassport = localPassportService.save(localPassport);
+//
+//            LocalPassportLink localPassportLink = new LocalPassportLink();
+//            localPassportLink.setLocalPassport(localPassport);
+//            localPassportLink.setPrivatePerson(candidate);
+//            localPassportLink.setCreatedAt(LocalDateTime.now());
+//            localPassportLink.setSource(row.getSource());
+//            localPassportLinkService.save(localPassportLink);
+//
+//        }
 
 
     }
@@ -310,6 +330,7 @@ public class PrivatePersonStageService {
 
         if (candidates.isEmpty()) {
             result = new PrivatePerson();
+            result.setId(UUID.randomUUID());
             return privatePersonService.save(result);
         } else {
             return filterCandidates(candidates, row);
@@ -345,7 +366,9 @@ public class PrivatePersonStageService {
         } else if (filteredInn.size() == 1) {
             return filteredInn.stream().findFirst().get();
         } else {
-            return privatePersonService.save(new PrivatePerson());
+            PrivatePerson p = new PrivatePerson();
+            p.setId(UUID.randomUUID());
+            return privatePersonService.save(p);
         }
     }
 
@@ -370,7 +393,8 @@ public class PrivatePersonStageService {
         pn.setPatronymicName(patronymicName== null ? "" :patronymicName);
         pn.setLanguageCode(languageCode== null ? LanguageCode.UA :languageCode);
         pn.setNoVowelsHash(NoVowelsHashUtils.calcNoVowelsHash(pn));
-        return personNameService.savePersonName(pn);
+        pn.generateId();
+        return personNameService.save2(pn);
     }
 
 }
