@@ -26,7 +26,7 @@ class EnricherApplicationTests {
 
     @Test
     void tstLoop(){
-        for (int i = 0; i < 900; i++) {
+        for (int i = 0; i < 1000; i++) {
             System.out.println("I: "+ i);
             contextLoads();
         }
