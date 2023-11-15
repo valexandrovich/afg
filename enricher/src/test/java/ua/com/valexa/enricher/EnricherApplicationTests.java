@@ -4,6 +4,7 @@ import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import ua.com.valexa.db.model.data.attribute.address_simple.AddressSimple;
@@ -41,25 +42,53 @@ class EnricherApplicationTests {
 
     @Test
     void tstLoop(){
-        for (int i = 0; i < 1000000; i++) {
-            if (i % 30 == 0){
-                System.out.println("I: "+ i);
-            }
 
-            contextLoads();
+        int batchSize = 1000;
+
+        for (int i = 1; i <= 1000; i++) {
+//            if (i % 30 == 0){
+
+//            }
+
+            long startTime = System.currentTimeMillis();
+            contextLoads(batchSize);
+            long endTime = System.currentTimeMillis();
+            long elapsedTimeMillis = endTime - startTime;
+
+            // Convert milliseconds to minutes, seconds, and milliseconds
+            long minutes = (elapsedTimeMillis / 1000) / 60;
+            long seconds = (elapsedTimeMillis / 1000) % 60;
+            long milliseconds = elapsedTimeMillis % 1000;
+            System.out.printf("I( "  +(i*batchSize)+  " ): " + i +   " :   %02d:%02d:%03d\n", minutes, seconds, milliseconds);
+//            System.out.println("I (k): "+ i);
+
         }
     }
     @Test
-    void contextLoads() {
-        Slice<PrivatePersonStageRow> batch = privatePersonRowStageRepository.findAllByIsHandled(false, PageRequest.of(0, 1));
+    void contextLoads(int batchSize) {
+//
+//        Page<PrivatePersonStageRow> page = privatePersonRowStageRepository.findAllByIsHandledPage(
+//                PageRequest.of(0, 1)
+//        );
+//
+        Slice<PrivatePersonStageRow> batch = privatePersonRowStageRepository
+                .findAllByIsHandled(false, PageRequest.of(0, batchSize));
         if (batch.isEmpty()){
             return;
         }
-        PrivatePersonStageRow row = batch.getContent().get(0);
+//            PrivatePersonStageRow row = batch.getContent().get(0);
+//        privatePersonStageService.enrichStageRow(row);
+//        row.setHandled(true);
+//        privatePersonRowStageRepository.save(row);
+        for (PrivatePersonStageRow row : batch.getContent()){
+
 //        System.out.println(row);
-        privatePersonStageService.enrichStageRow(row);
-        row.setHandled(true);
-        privatePersonRowStageRepository.save(row);
+//            System.out.println(row.getLastNameUa());
+            privatePersonStageService.enrichStageRow(row);
+            row.setHandled(true);
+            privatePersonRowStageRepository.save(row);
+        }
+
 
 
 

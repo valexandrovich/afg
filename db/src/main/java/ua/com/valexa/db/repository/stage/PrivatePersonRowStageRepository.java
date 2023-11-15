@@ -13,5 +13,6 @@ import java.util.UUID;
 public interface PrivatePersonRowStageRepository extends JpaRepository<PrivatePersonStageRow, UUID> {
 
     Slice<PrivatePersonStageRow> findAllByIsHandled(Boolean isHandled , Pageable pageable);
+//    Page<PrivatePersonStageRow> findAllByIsHandled(Boolean isHandled, Pageable pageable);
 
 }
