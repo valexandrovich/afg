@@ -22,10 +22,10 @@ public class InnLink {
 //    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
     private UUID id;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "private_person_id", foreignKey = @ForeignKey(name = "inn_link__private_person_fk"))
     private PrivatePerson privatePerson;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "inn_id", foreignKey = @ForeignKey(name = "inn_link__inn_fk"))
     private Inn inn;
     @Column(name = "created_at")

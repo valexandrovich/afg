@@ -8,7 +8,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface PersonBirthdayLinkRepository extends JpaRepository<BirthdayPersonLink, UUID> {
+public interface BirthdayPersonLinkRepository extends JpaRepository<BirthdayPersonLink, UUID> {
 
     Optional<BirthdayPersonLink> findByPrivatePersonIdAndBirthdayIdAndSource(
             UUID privatePersonId,

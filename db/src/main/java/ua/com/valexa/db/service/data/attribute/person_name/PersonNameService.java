@@ -33,30 +33,30 @@ public class PersonNameService {
     }
 
 
-    public PersonName save(PersonName personName) {
-        try {
-            return personNameRepository.save(personName);
-        } catch (DataIntegrityViolationException e) {
-            Optional<PersonName> storedPn = personNameRepository.findByLastNameAndFirstNameAndPatronymicNameAndLanguageCode(
-                    personName.getLastName(),
-                    personName.getFirstName(),
-                    personName.getPatronymicName(),
-                    personName.getLanguageCode()
-            );
-            return storedPn.orElse(null);
-        }
-        // Other exceptions can be caught and handled as well
-    }
+//    public PersonName save(PersonName personName) {
+//        try {
+//            return personNameRepository.save(personName);
+//        } catch (DataIntegrityViolationException e) {
+//            Optional<PersonName> storedPn = personNameRepository.findByLastNameAndFirstNameAndPatronymicNameAndLanguageCode(
+//                    personName.getLastName(),
+//                    personName.getFirstName(),
+//                    personName.getPatronymicName(),
+//                    personName.getLanguageCode()
+//            );
+//            return storedPn.orElse(null);
+//        }
+//        // Other exceptions can be caught and handled as well
+//    }
 
-    public PersonName save2(PersonName personName) {
-       return personNameRepository.save(personName);
-    }
-
-    @Async
-    @Transactional
-    public CompletableFuture<PersonName> saveAsync(PersonName personName){
-        return CompletableFuture.completedFuture(personNameRepository.save(personName));
-    }
+//    public PersonName save2(PersonName personName) {
+//       return personNameRepository.save(personName);
+//    }
+//
+//    @Async
+//    @Transactional
+//    public CompletableFuture<PersonName> saveAsync(PersonName personName){
+//        return CompletableFuture.completedFuture(personNameRepository.save(personName));
+//    }
 
 
 

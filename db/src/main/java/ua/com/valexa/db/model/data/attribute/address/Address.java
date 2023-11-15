@@ -4,8 +4,11 @@ import jakarta.persistence.*;
 import lombok.Data;
 import ua.com.valexa.db.model.data.attribute.Attribute;
 
+import java.util.Objects;
+import java.util.UUID;
+
 @Entity
-@Table(schema = "data", name = "address",indexes = {
+@Table(schema = "data", name = "address", indexes = {
         @Index(name = "address__country__index", columnList = "country"),
         @Index(name = "address__region__index", columnList = "region"),
         @Index(name = "address__county__index", columnList = "county"),
@@ -36,25 +39,58 @@ import ua.com.valexa.db.model.data.attribute.Attribute;
 @DiscriminatorValue("ADDRESS")
 public class Address extends Attribute {
     @Column(name = "country", length = 255)
-    private String country;
+    private String country = "";
     @Column(name = "region", length = 255)
-    private String region;
+    private String region = "";
     @Column(name = "county", length = 255)
-    private String county;
+    private String county = "";
     @Column(name = "city_type", length = 255)
-    private String cityType;
+    private String cityType = "";
     @Column(name = "city", length = 255)
-    private String city;
+    private String city = "";
     @Column(name = "street_type", length = 255)
-    private String streetType;
+    private String streetType = "";
     @Column(name = "street", length = 255)
-    private String street;
+    private String street = "";
     @Column(name = "building_number", length = 255)
-    private String buildingNumber;
+    private String buildingNumber = "";
     @Column(name = "building_letter", length = 255)
-    private String buildingLetter;
+    private String buildingLetter = "";
     @Column(name = "building_part", length = 255)
-    private String buildingPart;
+    private String buildingPart = "";
     @Column(name = "apartment", length = 255)
-    private String apartment;
+    private String apartment = "";
+
+    @Override
+    public String toString() {
+        return country + '_' +
+                region + '_' +
+                county + '_' +
+                cityType + '_' +
+                city + '_' +
+                streetType + '_' +
+                street + '_' +
+                buildingNumber + '_' +
+                buildingLetter + '_' +
+                buildingPart + '_' +
+                apartment;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        Address address = (Address) o;
+        return Objects.equals(country, address.country) && Objects.equals(region, address.region) && Objects.equals(county, address.county) && Objects.equals(cityType, address.cityType) && Objects.equals(city, address.city) && Objects.equals(streetType, address.streetType) && Objects.equals(street, address.street) && Objects.equals(buildingNumber, address.buildingNumber) && Objects.equals(buildingLetter, address.buildingLetter) && Objects.equals(buildingPart, address.buildingPart) && Objects.equals(apartment, address.apartment);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), country, region, county, cityType, city, streetType, street, buildingNumber, buildingLetter, buildingPart, apartment);
+    }
+
+    public void generateId(){
+        setId(UUID.nameUUIDFromBytes(toString().getBytes()));
+    }
 }

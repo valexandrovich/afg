@@ -5,6 +5,7 @@ import lombok.Data;
 import ua.com.valexa.db.model.data.base_objects.PrivatePerson;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.UUID;
 
 @Entity
@@ -18,17 +19,41 @@ import java.util.UUID;
 @Data
 public class LocalPassportLink {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+//    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
     private UUID id;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "private_person_id", foreignKey = @ForeignKey(name = "local_passport_link__private_person_fk"))
     private PrivatePerson privatePerson;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "local_passport_id", foreignKey = @ForeignKey(name = "local_passport_link__local_passport_fk"))
     private LocalPassport localPassport;
     @Column(name = "created_at")
     private LocalDateTime createdAt;
     @Column(name = "source")
     private String source;
+
+    @Override
+    public String toString() {
+        return privatePerson.getId().toString() + '_' +
+                localPassport.getId().toString() + '_' +
+                source;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        LocalPassportLink that = (LocalPassportLink) o;
+        return Objects.equals(privatePerson, that.privatePerson) && Objects.equals(localPassport, that.localPassport) && Objects.equals(source, that.source);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(privatePerson, localPassport, source);
+    }
+
+    public void generateId(){
+        setId(UUID.nameUUIDFromBytes(toString().getBytes()));
+    }
 }

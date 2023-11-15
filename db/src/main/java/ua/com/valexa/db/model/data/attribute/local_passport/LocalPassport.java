@@ -6,6 +6,8 @@ import lombok.Data;
 import ua.com.valexa.db.model.data.attribute.Attribute;
 
 import java.time.LocalDate;
+import java.util.Objects;
+import java.util.UUID;
 
 @Entity
 @Table(schema = "data", name = "local_passport", indexes = {
@@ -14,9 +16,7 @@ import java.time.LocalDate;
 },
         uniqueConstraints = @UniqueConstraint(name = "local_passport__full__uindex", columnNames = {
                 "serial",
-                "number",
-                "issuer_name",
-                "issued_at"
+                "number"
         })
 )
 @Data
@@ -30,4 +30,28 @@ public class LocalPassport extends Attribute {
     private String issuerName;
     @Column(name = "issued_at")
     private LocalDate issuedAt;
+
+    @Override
+    public String toString() {
+        return serial + '_' +
+               number;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        LocalPassport that = (LocalPassport) o;
+        return Objects.equals(serial, that.serial) && Objects.equals(number, that.number);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), serial, number);
+    }
+
+    public void generateId(){
+        setId(UUID.nameUUIDFromBytes(toString().getBytes()));
+    }
 }
