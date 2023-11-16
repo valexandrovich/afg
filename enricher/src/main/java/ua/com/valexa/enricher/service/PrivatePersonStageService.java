@@ -19,7 +19,7 @@ import ua.com.valexa.db.model.data.attribute.person_name.PersonNameLink;
 import ua.com.valexa.db.model.data.base_objects.PrivatePerson;
 import ua.com.valexa.db.model.data.enums.LanguageCode;
 import ua.com.valexa.db.model.stage.PrivatePersonStageRow;
-import ua.com.valexa.db.repository.stage.PrivatePersonRowStageRepository;
+import ua.com.valexa.db.repository.stage.PrivatePersonStageRowRepository;
 import ua.com.valexa.db.service.data.attribute.address.AddressPersonLinkService;
 import ua.com.valexa.db.service.data.attribute.address.AddressService;
 import ua.com.valexa.db.service.data.attribute.address_simple.AddressSimplePersonLinkService;
@@ -48,7 +48,7 @@ import java.util.stream.Collectors;
 public class PrivatePersonStageService {
 
     @Autowired
-    PrivatePersonRowStageRepository privatePersonRowStageRepository;
+    PrivatePersonStageRowRepository privatePersonStageRowRepository;
 
     @Autowired
     PrivatePersonService privatePersonService;
@@ -97,7 +97,7 @@ public class PrivatePersonStageService {
 
 
     public void enrichStageRow(UUID id) {
-        PrivatePersonStageRow row = privatePersonRowStageRepository.findById(id).orElseThrow(() -> new RuntimeException("Private Person Stage Row not found!"));
+        PrivatePersonStageRow row = privatePersonStageRowRepository.findById(id).orElseThrow(() -> new RuntimeException("Private Person Stage Row not found!"));
         PrivatePerson candidate = findCandidate(row);
         System.out.println(candidate);
 
@@ -130,6 +130,7 @@ public class PrivatePersonStageService {
             personNameLinkUa.setCreatedAt(LocalDateTime.now());
             personNameLinkUa.setPrivatePerson(candidate);
             personNameLinkUa.setPersonName(pnUa);
+//            personNameLinkUa.setStageRow(row);
             personNameLinkUa.generateId();
             linksTasks.add(personNameLinkService.save(personNameLinkUa));
         }
@@ -146,6 +147,7 @@ public class PrivatePersonStageService {
             personNameLinkRu.setCreatedAt(LocalDateTime.now());
             personNameLinkRu.setPrivatePerson(candidate);
             personNameLinkRu.setPersonName(pnRu);
+//            personNameLinkRu.setStageRow(row);
             personNameLinkRu.generateId();
             linksTasks.add(personNameLinkService.save(personNameLinkRu));
         }
@@ -162,6 +164,7 @@ public class PrivatePersonStageService {
             personNameLinkEn.setCreatedAt(LocalDateTime.now());
             personNameLinkEn.setPrivatePerson(candidate);
             personNameLinkEn.setPersonName(pnEn);
+//            personNameLinkEn.setStageRow(row);
             personNameLinkEn.generateId();
             linksTasks.add(personNameLinkService.save(personNameLinkEn));
         }
@@ -279,7 +282,6 @@ public class PrivatePersonStageService {
                         (row.getLocalPassportNumber() != null && !row.getLocalPassportNumber().isEmpty())
         ) {
 
-            System.out.println("SAVING LOCAL PASS");
 
             LocalPassport localPassport = new LocalPassport();
             localPassport.setSerial(row.getLocalPassportSerial());

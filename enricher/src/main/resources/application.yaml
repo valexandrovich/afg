@@ -6,6 +6,6 @@ spring:
     password: 3211
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
 server:
   port: 9001

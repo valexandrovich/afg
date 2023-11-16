@@ -3,6 +3,7 @@ package ua.com.valexa.db.model.data.attribute.birthday;
 import jakarta.persistence.*;
 import lombok.Data;
 import ua.com.valexa.db.model.data.base_objects.PrivatePerson;
+import ua.com.valexa.db.model.stage.PrivatePersonStageRow;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -32,6 +33,10 @@ public class BirthdayPersonLink {
     private LocalDateTime createdAt;
     @Column(name = "source")
     private String source;
+
+//    @ManyToOne
+//    @JoinColumn(name = "stage_row_id", foreignKey = @ForeignKey(name = "birthday_person_link_pp_stage_fk"))
+//    private PrivatePersonStageRow stageRow;
 
     @Override
     public String toString() {

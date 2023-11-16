@@ -2,16 +2,19 @@ package ua.com.valexa.db.model.stage;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import ua.com.valexa.db.model.data.enums.Country;
 import ua.com.valexa.db.model.data.enums.Sex;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
 @Entity
-@Table(schema="stage", name="pp_stage")
-public class PrivatePersonStageRow {
+@Table(schema = "stage", name = "pp_stage_archive")
+@NoArgsConstructor
+public class PrivatePersonStageRowArchive {
     @Id
     private UUID id;
     @Column(name = "portion_id")
@@ -114,35 +117,79 @@ public class PrivatePersonStageRow {
     private String mkComment;
     @Column(name = "source", length = 255, nullable = false)
     private String source;
-    @Column(name = "is_handled", columnDefinition = "BOOLEAN DEFAULT FALSE")
-    private boolean isHandled;
+    //    @Column(name = "is_handled", columnDefinition = "BOOLEAN DEFAULT FALSE")
+//    private boolean isHandled;
     @Column(name = "input_date", columnDefinition = "DATE DEFAULT now()")
     private LocalDate inputDate;
-//    @Column(name = "no_vowels_hash_ua", length = 255)
-//    private String noVowelsHashUa;
-//    @Column(name = "no_vowels_hash_ru", length = 255)
-//    private String noVowelsHashRu;
-//    @Column(name = "is_no_vowels_hash_equal")
-//    private Boolean isNoVowelsHashEqual;
-//    @Column(name = "calculated_birthday")
-//    private LocalDate calculatedBirthday;
-//    @Column(name = "birthday_check")
-//    private Boolean birthdayCheck;
+    @Column(name = "handled_at", columnDefinition = "DATE DEFAULT now()")
+    private LocalDateTime handledAt;
+
+    public PrivatePersonStageRowArchive(PrivatePersonStageRow row) {
+        this.id = row.getId();
+        this.portionId = row.getPortionId();
+
+        this.lastNameUa = row.getLastNameUa();
+        this.firstNameUa = row.getFirstNameUa();
+        this.patronymicNameUa = row.getPatronymicNameUa();
+
+        this.lastNameRu = row.getLastNameRu();
+        this.firstNameRu = row.getFirstNameRu();
+        this.patronymicNameRu = row.getPatronymicNameRu();
+
+        this.lastNameEn = row.getLastNameEn();
+        this.firstNameEn = row.getFirstNameEn();
+        this.patronymicNameEn = row.getPatronymicNameEn();
+
+        this.birthday = row.getBirthday();
+        this.inn = row.getInn();
+
+        this.localPassportSerial = row.getLocalPassportSerial();
+        this.localPassportNumber = row.getLocalPassportNumber();
+        this.localPassportIssuerName = row.getLocalPassportIssuerName();
+        this.localPassportIssueDate = row.getLocalPassportIssueDate();
+
+        this.idPassportNumber = row.getIdPassportNumber();
+        this.idPassportRecord = row.getIdPassportRecord();
+        this.idPassportIssueDate = row.getIdPassportIssueDate();
+        this.idPassportIssuerCode = row.getIdPassportIssuerCode();
+
+        this.intPassportSerial = row.getIntPassportSerial();
+        this.intPassportNumber = row.getIntPassportNumber();
+        this.intPassportIssuer = row.getIntPassportIssuer();
+        this.intPassportIssueDate = row.getIntPassportIssueDate();
+
+        this.citizenship = row.getCitizenship();
+        this.birthplace = row.getBirthplace();
+        this.sex = row.getSex();
+        this.phone = row.getPhone();
+        this.email = row.getEmail();
+
+        this.addressSimple = row.getAddressSimple();
+
+        this.addressCountry = row.getAddressCountry();
+        this.addressRegion = row.getAddressRegion();
+        this.addressCounty = row.getAddressCounty();
+        this.addressCityType = row.getAddressCityType();
+        this.addressCity = row.getAddressCity();
+        this.addressStreetType = row.getAddressStreetType();
+        this.addressStreet = row.getAddressStreet();
+        this.addressBuildingNumber = row.getAddressBuildingNumber();
+        this.addressBuildingLetter = row.getAddressBuildingLetter();
+        this.addressBuildingPart = row.getAddressBuildingPart();
+        this.addressApartment = row.getAddressApartment();
+
+        this.mkCode = row.getMkCode();
+        this.mkEventDate = row.getMkEventDate();
+        this.mkStartDate = row.getMkStartDate();
+        this.mkEndDate = row.getMkEndDate();
+        this.mkTextValue = row.getMkTextValue();
+        this.mkNumberValue = row.getMkNumberValue();
+        this.mkComment = row.getMkComment();
+        this.source = row.getSource();
+        this.inputDate = row.getInputDate();
+        this.handledAt = LocalDateTime.now();
 
 
-    public boolean hasUaName() {
-        return lastNameUa != null && !lastNameUa.isEmpty() &&
-                firstNameUa != null && !firstNameUa.isEmpty();
-    }
-
-    public boolean hasRuName() {
-        return lastNameRu != null && !lastNameRu.isEmpty() &&
-                firstNameRu != null && !firstNameRu.isEmpty();
-    }
-
-    public boolean hasEnName() {
-        return lastNameEn != null && !lastNameEn.isEmpty() &&
-                firstNameEn != null && !firstNameEn.isEmpty();
     }
 
 

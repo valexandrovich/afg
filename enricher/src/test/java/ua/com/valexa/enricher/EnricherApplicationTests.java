@@ -1,32 +1,25 @@
 package ua.com.valexa.enricher;
 
-import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import ua.com.valexa.db.model.data.attribute.address_simple.AddressSimple;
 import ua.com.valexa.db.model.data.attribute.address_simple.AddressSimplePersonLink;
-import ua.com.valexa.db.model.data.attribute.birthday.Birthday;
-import ua.com.valexa.db.model.data.attribute.birthday.BirthdayPersonLink;
-import ua.com.valexa.db.model.data.attribute.person_name.PersonName;
-import ua.com.valexa.db.model.data.attribute.person_name.PersonNameLink;
 import ua.com.valexa.db.model.data.base_objects.PrivatePerson;
-import ua.com.valexa.db.model.data.enums.LanguageCode;
 import ua.com.valexa.db.model.stage.PrivatePersonStageRow;
+import ua.com.valexa.db.model.stage.PrivatePersonStageRowArchive;
 import ua.com.valexa.db.repository.data.attribute.address_simple.AddressSimplePersonLinkRepository;
 import ua.com.valexa.db.repository.data.attribute.birthday.BirthdayPersonLinkRepository;
 import ua.com.valexa.db.repository.data.attribute.person_name.PersonNameLinkRepository;
 import ua.com.valexa.db.repository.data.attribute.person_name.PersonNameRepository;
 import ua.com.valexa.db.repository.data.base_objects.PrivatePersonRepository;
-import ua.com.valexa.db.repository.stage.PrivatePersonRowStageRepository;
+import ua.com.valexa.db.repository.stage.PrivatePersonStageRowArchiveRepository;
+import ua.com.valexa.db.repository.stage.PrivatePersonStageRowRepository;
 import ua.com.valexa.enricher.service.PrivatePersonStageService;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -34,7 +27,7 @@ import java.util.UUID;
 class EnricherApplicationTests {
 
     @Autowired
-    PrivatePersonRowStageRepository privatePersonRowStageRepository;
+    PrivatePersonStageRowRepository privatePersonStageRowRepository;
 
     @Autowired
     PrivatePersonStageService privatePersonStageService;
@@ -64,6 +57,9 @@ class EnricherApplicationTests {
 
         }
     }
+
+    @Autowired
+    PrivatePersonStageRowArchiveRepository privatePersonStageRowArchiveRepository;
     @Test
     void contextLoads(int batchSize) {
 //
@@ -71,7 +67,7 @@ class EnricherApplicationTests {
 //                PageRequest.of(0, 1)
 //        );
 //
-        Slice<PrivatePersonStageRow> batch = privatePersonRowStageRepository
+        Slice<PrivatePersonStageRow> batch = privatePersonStageRowRepository
                 .findAllByIsHandled(false, PageRequest.of(0, batchSize));
         if (batch.isEmpty()){
             return;
@@ -85,8 +81,13 @@ class EnricherApplicationTests {
 //        System.out.println(row);
 //            System.out.println(row.getLastNameUa());
             privatePersonStageService.enrichStageRow(row);
-            row.setHandled(true);
-            privatePersonRowStageRepository.save(row);
+//            row.setHandled(true);
+
+            PrivatePersonStageRowArchive arch = new PrivatePersonStageRowArchive(row);
+            privatePersonStageRowArchiveRepository.save(arch);
+            privatePersonStageRowRepository.delete(row);
+
+//            privatePersonStageRowRepository.save(row);
         }
 
 
