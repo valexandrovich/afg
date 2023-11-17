@@ -41,7 +41,7 @@ public class PersonName extends Attribute {
     @Column(name = "no_vowels_hash")
     private String noVowelsHash ="";
 
-    @OneToMany(mappedBy = "personName", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "personName", fetch = FetchType.LAZY)
     private Set<PersonNameLink> nameLinks = new HashSet<>();
 
     @Override

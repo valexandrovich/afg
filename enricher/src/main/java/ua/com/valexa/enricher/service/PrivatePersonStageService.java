@@ -1,5 +1,6 @@
 package ua.com.valexa.enricher.service;
 
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ua.com.valexa.db.model.data.attribute.address.Address;

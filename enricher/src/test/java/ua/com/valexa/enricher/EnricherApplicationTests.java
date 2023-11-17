@@ -36,11 +36,11 @@ class EnricherApplicationTests {
 
 
     @Test
-    void tstLoop(){
+    void tstLoop() {
 
-        int batchSize = 1000;
+        int batchSize = 1;
 
-        for (int i = 1; i <= 1000; i++) {
+        for (int i = 1; i <= 1; i++) {
 //            if (i % 30 == 0){
 
 //            }
@@ -54,7 +54,7 @@ class EnricherApplicationTests {
             long minutes = (elapsedTimeMillis / 1000) / 60;
             long seconds = (elapsedTimeMillis / 1000) % 60;
             long milliseconds = elapsedTimeMillis % 1000;
-            System.out.printf("I( "  +(i*batchSize)+  " ): " + i +   " :   %02d:%02d:%03d\n", minutes, seconds, milliseconds);
+            System.out.printf("I( " + (i * batchSize) + " ): " + i + " :   %02d:%02d:%03d", minutes, seconds, milliseconds);
 //            System.out.println("I (k): "+ i);
 
         }
@@ -62,6 +62,7 @@ class EnricherApplicationTests {
 
     @Autowired
     PrivatePersonStageRowArchiveRepository privatePersonStageRowArchiveRepository;
+
     @Test
     void contextLoads(int batchSize) {
 //
@@ -69,36 +70,35 @@ class EnricherApplicationTests {
 //                PageRequest.of(0, 1)
 //        );
 //
-//        long startTime = System.currentTimeMillis();
+        long startTime = System.currentTimeMillis();
 //        Slice<PrivatePersonStageRow> batch = privatePersonStageRowRepository.findAllByIsHandled(false, PageRequest.of(0, batchSize));
-        Slice<PrivatePersonStageRow> batch = privatePersonStageRowRepository.findAll( PageRequest.of(0, batchSize));
-//        long endTime = System.currentTimeMillis(); // Get end time
-//        long duration = endTime - startTime;
-//        long minutes = duration / 60000;
-//        long seconds = (duration % 60000) / 1000;
-//        long milliseconds = duration % 1000;
-//        System.out.printf("privatePersonStageRowRepository.findAllByIsHandled(): " + "%02d:%02d:%03d%n", minutes, seconds, milliseconds);
+//        Slice<PrivatePersonStageRow> batch = privatePersonStageRowRepository.findAll(PageRequest.of(0, batchSize));
+        Slice<PrivatePersonStageRow> batch = privatePersonStageRowRepository.findBy(PageRequest.of(0, batchSize));
 
-        if (batch.isEmpty()){
-            return;
-        }
+
+
+        long endTime = System.currentTimeMillis(); // Get end time
+        long duration = endTime - startTime;
+        long minutes = duration / 60000;
+        long seconds = (duration % 60000) / 1000;
+        long milliseconds = duration % 1000;
+        String t1 = String.format("Fetching rows: " + "%02d:%02d:%03d%n", minutes, seconds, milliseconds);
+
 //            PrivatePersonStageRow row = batch.getContent().get(0);
 //        privatePersonStageService.enrichStageRow(row);
 //        row.setHandled(true);
 //        privatePersonRowStageRepository.save(row);
         List<PrivatePersonStageRowArchive> rowsToArchive = new ArrayList<>();
-        for (PrivatePersonStageRow row : batch.getContent()){
+
+        startTime = System.currentTimeMillis();
+        for (PrivatePersonStageRow row : batch.getContent()) {
 
 //        System.out.println(row);
 //            System.out.println(row.getLastNameUa());
-//            startTime = System.currentTimeMillis();
+//
             privatePersonStageService.enrichStageRow(row);
-//            endTime = System.currentTimeMillis(); // Get end time
-//            duration = endTime - startTime;
-//            minutes = duration / 60000;
-//            seconds = (duration % 60000) / 1000;
-//            milliseconds = duration % 1000;
-//            System.out.printf("privatePersonStageService.enrichStageRow(row): " + "%02d:%02d:%03d%n", minutes, seconds, milliseconds);
+
+
 //            row.setHandled(true);
 
 //            startTime = System.currentTimeMillis();
@@ -110,7 +110,6 @@ class EnricherApplicationTests {
 //            seconds = (duration % 60000) / 1000;
 //            milliseconds = duration % 1000;
 //            System.out.printf("PrivatePersonStageRowArchive arch = new PrivatePersonStageRowArchive(row);: " + "%02d:%02d:%03d%n", minutes, seconds, milliseconds);
-
 
 
 //            startTime = System.currentTimeMillis();
@@ -134,12 +133,34 @@ class EnricherApplicationTests {
 
 //            privatePersonStageRowRepository.save(row);
         }
+        endTime = System.currentTimeMillis(); // Get end time
+        duration = endTime - startTime;
+        minutes = duration / 60000;
+        seconds = (duration % 60000) / 1000;
+        milliseconds = duration % 1000;
+        String t2 = String.format("Rows enrichment: " + "%02d:%02d:%03d%n", minutes, seconds, milliseconds);
 
+
+        startTime = System.currentTimeMillis();
         privatePersonStageRowArchiveRepository.saveAll(rowsToArchive);
+        endTime = System.currentTimeMillis(); // Get end time
+        duration = endTime - startTime;
+        minutes = duration / 60000;
+        seconds = (duration % 60000) / 1000;
+        milliseconds = duration % 1000;
+        String t3 = String.format("Moving to archive: " + "%02d:%02d:%03d%n", minutes, seconds, milliseconds);
+
+        startTime = System.currentTimeMillis();
         privatePersonStageRowRepository.deleteAll(batch.getContent());
+        endTime = System.currentTimeMillis(); // Get end time
+        duration = endTime - startTime;
+        minutes = duration / 60000;
+        seconds = (duration % 60000) / 1000;
+        milliseconds = duration % 1000;
+        String t4 = String.format("Deleting stage: " + "%02d:%02d:%03d%n", minutes, seconds, milliseconds);
 
 
-
+        System.out.print(t1 + "; " +  t2 + "; " +  t3 + "; " +  t4);
 
     }
 
@@ -147,8 +168,8 @@ class EnricherApplicationTests {
     PrivatePersonRepository privatePersonRepository;
 
     @Test
-    void getP(){
-        Optional<PrivatePerson> p =  privatePersonRepository.findById(UUID.fromString("78adf6e9-8b7b-41ca-a345-5c2339605cb8"));
+    void getP() {
+        Optional<PrivatePerson> p = privatePersonRepository.findById(UUID.fromString("78adf6e9-8b7b-41ca-a345-5c2339605cb8"));
         System.out.println(p);
     }
 
@@ -169,9 +190,8 @@ class EnricherApplicationTests {
     AddressSimplePersonLinkRepository addressSimplePersonLinkRepository;
 
 
-
     @Test
-    void tst2(){
+    void tst2() {
 
         PrivatePerson p = new PrivatePerson();
 //        p.setId(UUID.randomUUID());
@@ -204,12 +224,12 @@ class EnricherApplicationTests {
 
 
     @Test
-    void tst3(){
+    void tst3() {
 
         String m = "abcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcghshshshhss";
 
         String s = null;
-        String x = s.substring(0,  Math.min(s.length(), 254)  );
+        String x = s.substring(0, Math.min(s.length(), 254));
 
 
         System.out.println(x);
