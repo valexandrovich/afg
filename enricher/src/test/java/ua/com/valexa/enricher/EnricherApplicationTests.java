@@ -88,22 +88,25 @@ class EnricherApplicationTests {
 //        privatePersonStageService.enrichStageRow(row);
 //        row.setHandled(true);
 //        privatePersonRowStageRepository.save(row);
-        List<PrivatePersonStageRowArchive> rowsToArchive = new ArrayList<>();
+//        List<PrivatePersonStageRowArchive> rowsToArchive = new ArrayList<>();
 
-        startTime = System.currentTimeMillis();
+//        startTime = System.currentTimeMillis();
         for (PrivatePersonStageRow row : batch.getContent()) {
 
 //        System.out.println(row);
 //            System.out.println(row.getLastNameUa());
 //
             privatePersonStageService.enrichStageRow(row);
+            PrivatePersonStageRowArchive arch = new PrivatePersonStageRowArchive(row);
+            privatePersonStageRowArchiveRepository.save(arch);
+            privatePersonStageRowRepository.delete(row);
 
 
 //            row.setHandled(true);
 
 //            startTime = System.currentTimeMillis();
-            rowsToArchive.add(new PrivatePersonStageRowArchive(row));
-//            PrivatePersonStageRowArchive arch = new PrivatePersonStageRowArchive(row);
+//            rowsToArchive.add(new PrivatePersonStageRowArchive(row));
+
 //            endTime = System.currentTimeMillis(); // Get end time
 //            duration = endTime - startTime;
 //            minutes = duration / 60000;
@@ -133,34 +136,34 @@ class EnricherApplicationTests {
 
 //            privatePersonStageRowRepository.save(row);
         }
-        endTime = System.currentTimeMillis(); // Get end time
-        duration = endTime - startTime;
-        minutes = duration / 60000;
-        seconds = (duration % 60000) / 1000;
-        milliseconds = duration % 1000;
-        String t2 = String.format("Rows enrichment: " + "%02d:%02d:%03d%n", minutes, seconds, milliseconds);
+//        endTime = System.currentTimeMillis(); // Get end time
+//        duration = endTime - startTime;
+//        minutes = duration / 60000;
+//        seconds = (duration % 60000) / 1000;
+//        milliseconds = duration % 1000;
+//        String t2 = String.format("Rows enrichment: " + "%02d:%02d:%03d%n", minutes, seconds, milliseconds);
 
 
-        startTime = System.currentTimeMillis();
-        privatePersonStageRowArchiveRepository.saveAll(rowsToArchive);
-        endTime = System.currentTimeMillis(); // Get end time
-        duration = endTime - startTime;
-        minutes = duration / 60000;
-        seconds = (duration % 60000) / 1000;
-        milliseconds = duration % 1000;
-        String t3 = String.format("Moving to archive: " + "%02d:%02d:%03d%n", minutes, seconds, milliseconds);
+//        startTime = System.currentTimeMillis();
+//        privatePersonStageRowArchiveRepository.saveAll(rowsToArchive);
+//        endTime = System.currentTimeMillis(); // Get end time
+//        duration = endTime - startTime;
+//        minutes = duration / 60000;
+//        seconds = (duration % 60000) / 1000;
+//        milliseconds = duration % 1000;
+//        String t3 = String.format("Moving to archive: " + "%02d:%02d:%03d%n", minutes, seconds, milliseconds);
 
-        startTime = System.currentTimeMillis();
-        privatePersonStageRowRepository.deleteAll(batch.getContent());
-        endTime = System.currentTimeMillis(); // Get end time
-        duration = endTime - startTime;
-        minutes = duration / 60000;
-        seconds = (duration % 60000) / 1000;
-        milliseconds = duration % 1000;
-        String t4 = String.format("Deleting stage: " + "%02d:%02d:%03d%n", minutes, seconds, milliseconds);
+//        startTime = System.currentTimeMillis();
+//        privatePersonStageRowRepository.deleteAll(batch.getContent());
+//        endTime = System.currentTimeMillis(); // Get end time
+//        duration = endTime - startTime;
+//        minutes = duration / 60000;
+//        seconds = (duration % 60000) / 1000;
+//        milliseconds = duration % 1000;
+//        String t4 = String.format("Deleting stage: " + "%02d:%02d:%03d%n", minutes, seconds, milliseconds);
 
 
-        System.out.print(t1 + "; " +  t2 + "; " +  t3 + "; " +  t4);
+//        System.out.print(t1 + "; " +  t2 + "; " +  t3 + "; " +  t4);
 
     }
 
