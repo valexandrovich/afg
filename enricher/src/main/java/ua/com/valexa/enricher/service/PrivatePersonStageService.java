@@ -222,7 +222,7 @@ public class PrivatePersonStageService {
 //
         if (row.getAddressSimple() != null && !row.getAddressSimple().isEmpty()) {
             AddressSimple addressSimple = new AddressSimple();
-            addressSimple.setAddress(row.getAddressSimple());
+            addressSimple.setAddress(row.getAddressSimple().substring(0, Math.min(254, row.getAddressSimple().length())));
             addressSimple.generateId();
 //            addressSimple = addressSimpleService.save(addressSimple);
 

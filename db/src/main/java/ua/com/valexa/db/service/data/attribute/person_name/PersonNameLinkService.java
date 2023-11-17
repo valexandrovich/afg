@@ -36,7 +36,17 @@ public class PersonNameLinkService {
     @Transactional
     public CompletableFuture<Void> save(PersonNameLink personNameLink){
         return CompletableFuture.runAsync(()->{
+
+//            long startTime = System.currentTimeMillis();
+
             personNameLinkRepository.save(personNameLink);
+
+//            long endTime = System.currentTimeMillis(); // Get end time
+//            long duration = endTime - startTime;
+//            long minutes = duration / 60000;
+//            long seconds = (duration % 60000) / 1000;
+//            long milliseconds = duration % 1000;
+//            System.out.printf("save(PersonNameLink personNameLink): " + "%02d:%02d:%03d%n", minutes, seconds, milliseconds);
         });
     }
 }

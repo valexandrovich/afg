@@ -38,7 +38,15 @@ public class LocalPassportLinkService {
     @Transactional
     public CompletableFuture<Void> saveAsync(LocalPassportLink localPassportLink){
         return CompletableFuture.runAsync(()->{
+//            long startTime = System.currentTimeMillis();
             localPassportLinkRepository.save(localPassportLink);
+//            long endTime = System.currentTimeMillis(); // Get end time
+//            long duration = endTime - startTime;
+//            long minutes = duration / 60000;
+//            long seconds = (duration % 60000) / 1000;
+//            long milliseconds = duration % 1000;
+//            System.out.printf("saveAsync(LocalPassportLink localPassportLink): " + "%02d:%02d:%03d%n", minutes, seconds, milliseconds);
+
         });
     }
 }
