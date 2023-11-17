@@ -20,6 +20,7 @@ import ua.com.valexa.db.model.data.attribute.person_name.PersonNameLink;
 import ua.com.valexa.db.model.data.base_objects.PrivatePerson;
 import ua.com.valexa.db.model.data.enums.LanguageCode;
 import ua.com.valexa.db.model.stage.PrivatePersonStageRow;
+import ua.com.valexa.db.repository.data.base_objects.PrivatePersonRepository;
 import ua.com.valexa.db.repository.stage.PrivatePersonStageRowRepository;
 import ua.com.valexa.db.service.data.attribute.address.AddressPersonLinkService;
 import ua.com.valexa.db.service.data.attribute.address.AddressService;
@@ -110,8 +111,45 @@ public class PrivatePersonStageService {
     }
 
 
+
+    @Autowired
+    PrivatePersonRepository privatePersonRepository;
+
+    public void test(){
+
+//        PrivatePerson p = privatePersonRepository.findById(UUID.fromString("388d8219-8b5a-4385-947b-1313ecdef7e4")).orElse(null);
+        PrivatePerson p = new PrivatePerson();
+        p.setId(UUID.fromString("388d8219-8b5a-4385-947b-1313ecdef7e5"));
+
+        System.out.println(p);
+
+        PersonName pn = new PersonName();
+        pn.setFirstName("AAA");
+        pn.generateId();
+
+        PersonNameLink pnl = new PersonNameLink();
+        pnl.setPrivatePerson(p);
+        pnl.setPersonName(pn);
+        pnl.setSource("UNIT");
+        pnl.setCreatedAt(LocalDateTime.now());
+        pnl.generateId();
+
+        System.out.println(pnl.getId());
+
+        CompletableFuture<Void> task =  personNameLinkService.save(pnl);
+        task.join();
+
+
+    }
+
+
     public void enrichStageRow(PrivatePersonStageRow row) {
         PrivatePerson candidate = findCandidate(row);
+
+
+
+
+
 
 //        CompletableFuture<Void> uaNameTask = null;
 //        CompletableFuture<Void> ruNameTask = null;
@@ -304,6 +342,8 @@ public class PrivatePersonStageService {
         }
 
         CompletableFuture<Void> allLinksTasks = CompletableFuture.allOf(linksTasks.toArray(new CompletableFuture[0]));
+
+
         allLinksTasks.join();
 
     }

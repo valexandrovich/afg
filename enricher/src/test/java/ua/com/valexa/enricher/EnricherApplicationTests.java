@@ -38,9 +38,9 @@ class EnricherApplicationTests {
     @Test
     void tstLoop() {
 
-        int batchSize = 1;
+        int batchSize = 1000;
 
-        for (int i = 1; i <= 1; i++) {
+        for (int i = 1; i <= 100000; i++) {
 //            if (i % 30 == 0){
 
 //            }
@@ -70,19 +70,19 @@ class EnricherApplicationTests {
 //                PageRequest.of(0, 1)
 //        );
 //
-        long startTime = System.currentTimeMillis();
+//        long startTime = System.currentTimeMillis();
 //        Slice<PrivatePersonStageRow> batch = privatePersonStageRowRepository.findAllByIsHandled(false, PageRequest.of(0, batchSize));
 //        Slice<PrivatePersonStageRow> batch = privatePersonStageRowRepository.findAll(PageRequest.of(0, batchSize));
         Slice<PrivatePersonStageRow> batch = privatePersonStageRowRepository.findBy(PageRequest.of(0, batchSize));
 
 
 
-        long endTime = System.currentTimeMillis(); // Get end time
-        long duration = endTime - startTime;
-        long minutes = duration / 60000;
-        long seconds = (duration % 60000) / 1000;
-        long milliseconds = duration % 1000;
-        String t1 = String.format("Fetching rows: " + "%02d:%02d:%03d%n", minutes, seconds, milliseconds);
+//        long endTime = System.currentTimeMillis(); // Get end time
+//        long duration = endTime - startTime;
+//        long minutes = duration / 60000;
+//        long seconds = (duration % 60000) / 1000;
+//        long milliseconds = duration % 1000;
+//        String t1 = String.format("Fetching rows: " + "%02d:%02d:%03d%n", minutes, seconds, milliseconds);
 
 //            PrivatePersonStageRow row = batch.getContent().get(0);
 //        privatePersonStageService.enrichStageRow(row);
@@ -90,7 +90,7 @@ class EnricherApplicationTests {
 //        privatePersonRowStageRepository.save(row);
         List<PrivatePersonStageRowArchive> rowsToArchive = new ArrayList<>();
 
-        startTime = System.currentTimeMillis();
+//        startTime = System.currentTimeMillis();
         for (PrivatePersonStageRow row : batch.getContent()) {
 
 //        System.out.println(row);
@@ -133,34 +133,34 @@ class EnricherApplicationTests {
 
 //            privatePersonStageRowRepository.save(row);
         }
-        endTime = System.currentTimeMillis(); // Get end time
-        duration = endTime - startTime;
-        minutes = duration / 60000;
-        seconds = (duration % 60000) / 1000;
-        milliseconds = duration % 1000;
-        String t2 = String.format("Rows enrichment: " + "%02d:%02d:%03d%n", minutes, seconds, milliseconds);
+//        endTime = System.currentTimeMillis(); // Get end time
+//        duration = endTime - startTime;
+//        minutes = duration / 60000;
+//        seconds = (duration % 60000) / 1000;
+//        milliseconds = duration % 1000;
+//        String t2 = String.format("Rows enrichment: " + "%02d:%02d:%03d%n", minutes, seconds, milliseconds);
 
 
-        startTime = System.currentTimeMillis();
+//        startTime = System.currentTimeMillis();
         privatePersonStageRowArchiveRepository.saveAll(rowsToArchive);
-        endTime = System.currentTimeMillis(); // Get end time
-        duration = endTime - startTime;
-        minutes = duration / 60000;
-        seconds = (duration % 60000) / 1000;
-        milliseconds = duration % 1000;
-        String t3 = String.format("Moving to archive: " + "%02d:%02d:%03d%n", minutes, seconds, milliseconds);
+//        endTime = System.currentTimeMillis(); // Get end time
+//        duration = endTime - startTime;
+//        minutes = duration / 60000;
+//        seconds = (duration % 60000) / 1000;
+//        milliseconds = duration % 1000;
+//        String t3 = String.format("Moving to archive: " + "%02d:%02d:%03d%n", minutes, seconds, milliseconds);
 
-        startTime = System.currentTimeMillis();
+//        startTime = System.currentTimeMillis();
         privatePersonStageRowRepository.deleteAll(batch.getContent());
-        endTime = System.currentTimeMillis(); // Get end time
-        duration = endTime - startTime;
-        minutes = duration / 60000;
-        seconds = (duration % 60000) / 1000;
-        milliseconds = duration % 1000;
-        String t4 = String.format("Deleting stage: " + "%02d:%02d:%03d%n", minutes, seconds, milliseconds);
+//        endTime = System.currentTimeMillis(); // Get end time
+//        duration = endTime - startTime;
+//        minutes = duration / 60000;
+//        seconds = (duration % 60000) / 1000;
+//        milliseconds = duration % 1000;
+//        String t4 = String.format("Deleting stage: " + "%02d:%02d:%03d%n", minutes, seconds, milliseconds);
 
 
-        System.out.print(t1 + "; " +  t2 + "; " +  t3 + "; " +  t4);
+//        System.out.print(t1 + "; " +  t2 + "; " +  t3 + "; " +  t4);
 
     }
 
@@ -226,14 +226,7 @@ class EnricherApplicationTests {
     @Test
     void tst3() {
 
-        String m = "abcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcghshshshhss";
-
-        String s = null;
-        String x = s.substring(0, Math.min(s.length(), 254));
-
-
-        System.out.println(x);
-        System.out.println(x.length());
+        privatePersonStageService.test();
 
     }
 
