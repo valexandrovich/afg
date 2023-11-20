@@ -1,6 +1,5 @@
 package ua.com.valexa.db.model.data.attribute.local_passport;
 
-
 import jakarta.persistence.*;
 import lombok.Data;
 import ua.com.valexa.db.model.data.attribute.Attribute;
@@ -20,11 +19,10 @@ import java.util.UUID;
         })
 )
 @Data
-@DiscriminatorValue("LOCAL_PASSPORT")
 public class LocalPassport extends Attribute {
-    @Column(name = "serial", length = 2)
+    @Column(name = "serial", length = 2, nullable = false)
     private String serial;
-    @Column(name = "number", length = 6)
+    @Column(name = "number", length = 6, nullable = false)
     private String number;
     @Column(name = "issuer_name")
     private String issuerName;
@@ -34,7 +32,7 @@ public class LocalPassport extends Attribute {
     @Override
     public String toString() {
         return serial + '_' +
-               number;
+                number;
     }
 
     @Override

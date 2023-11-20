@@ -1,4 +1,4 @@
-package ua.com.valexa.db.model.data.enums;
+package ua.com.valexa.db.model.enums;
 
 public enum LanguageCode {
     UA,

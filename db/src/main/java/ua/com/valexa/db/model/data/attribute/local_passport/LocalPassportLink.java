@@ -2,8 +2,8 @@ package ua.com.valexa.db.model.data.attribute.local_passport;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import ua.com.valexa.db.model.data.base_objects.PrivatePerson;
-import ua.com.valexa.db.model.stage.PrivatePersonStageRow;
+import ua.com.valexa.db.model.data.attribute.inn.Inn;
+import ua.com.valexa.db.model.data.base_object.PrivatePerson;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -19,24 +19,22 @@ import java.util.UUID;
         })
 @Data
 public class LocalPassportLink {
+
     @Id
-//    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id")
     private UUID id;
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "private_person_id", foreignKey = @ForeignKey(name = "local_passport_link__private_person_fk"))
+
+    @ManyToOne
+    @JoinColumn(name = "private_person_id", foreignKey = @ForeignKey(name = "local_passport_link__private_person__fk"))
     private PrivatePerson privatePerson;
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "local_passport_id", foreignKey = @ForeignKey(name = "local_passport_link__local_passport_fk"))
+    @ManyToOne
+    @JoinColumn(name = "local_passport_id", foreignKey = @ForeignKey(name = "local_passport_link__local_passport__fk"))
     private LocalPassport localPassport;
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
+    @Column(name = "actual_date")
+    private LocalDateTime actualDate;
+    @Column(name = "is_active")
+    private Boolean isActive = true;
     @Column(name = "source")
     private String source;
-
-//    @ManyToOne
-//    @JoinColumn(name = "stage_row_id", foreignKey = @ForeignKey(name = "local_passport_link_pp_stage_fk"))
-//    private PrivatePersonStageRow stageRow;
 
     @Override
     public String toString() {
@@ -58,7 +56,7 @@ public class LocalPassportLink {
         return Objects.hash(privatePerson, localPassport, source);
     }
 
-    public void generateId(){
-        setId(UUID.nameUUIDFromBytes(toString().getBytes()));
+    public void generateId() {
+        this.id = UUID.nameUUIDFromBytes(toString().getBytes());
     }
 }

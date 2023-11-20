@@ -1,183 +1,49 @@
 package ua.com.valexa.enricher;
 
+import jakarta.transaction.Transactional;
+import org.checkerframework.checker.units.qual.A;
+import org.hibernate.Hibernate;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
-import ua.com.valexa.db.model.data.attribute.address_simple.AddressSimple;
-import ua.com.valexa.db.model.data.attribute.address_simple.AddressSimplePersonLink;
-import ua.com.valexa.db.model.data.base_objects.PrivatePerson;
+import ua.com.valexa.db.model.data.attribute.inn.Inn;
+import ua.com.valexa.db.model.data.attribute.inn.InnLink;
+import ua.com.valexa.db.model.data.attribute.person_name.PersonName;
+import ua.com.valexa.db.model.data.attribute.person_name.PersonNameLink;
+import ua.com.valexa.db.model.data.base_object.PrivatePerson;
+import ua.com.valexa.db.model.data.tag.Tag;
+import ua.com.valexa.db.model.data.tag.TagAttributeLink;
+import ua.com.valexa.db.model.data.tag.TagType;
+import ua.com.valexa.db.model.enums.LanguageCode;
 import ua.com.valexa.db.model.stage.PrivatePersonStageRow;
 import ua.com.valexa.db.model.stage.PrivatePersonStageRowArchive;
-import ua.com.valexa.db.repository.data.attribute.address_simple.AddressSimplePersonLinkRepository;
-import ua.com.valexa.db.repository.data.attribute.birthday.BirthdayPersonLinkRepository;
+import ua.com.valexa.db.repository.*;
+import ua.com.valexa.db.repository.data.attribute.inn.InnLinkRepository;
+import ua.com.valexa.db.repository.data.attribute.inn.InnRepository;
 import ua.com.valexa.db.repository.data.attribute.person_name.PersonNameLinkRepository;
 import ua.com.valexa.db.repository.data.attribute.person_name.PersonNameRepository;
-import ua.com.valexa.db.repository.data.base_objects.PrivatePersonRepository;
+import ua.com.valexa.db.repository.data.base_object.PrivatePersonRepository;
 import ua.com.valexa.db.repository.stage.PrivatePersonStageRowArchiveRepository;
 import ua.com.valexa.db.repository.stage.PrivatePersonStageRowRepository;
+import ua.com.valexa.db.service.data.base_object.PrivatePersonService;
 import ua.com.valexa.enricher.service.PrivatePersonStageService;
+import ua.com.valexa.enricher.service.TestService;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 @SpringBootTest
 class EnricherApplicationTests {
 
     @Autowired
-    PrivatePersonStageRowRepository privatePersonStageRowRepository;
-
-    @Autowired
-    PrivatePersonStageService privatePersonStageService;
-
-
-    @Test
-    void tstLoop() {
-
-        int batchSize = 1000;
-
-        for (int i = 1; i <= 2; i++) {
-//            if (i % 30 == 0){
-
-//            }
-
-            long startTime = System.currentTimeMillis();
-            contextLoads(batchSize);
-            long endTime = System.currentTimeMillis();
-            long elapsedTimeMillis = endTime - startTime;
-
-            // Convert milliseconds to minutes, seconds, and milliseconds
-            long minutes = (elapsedTimeMillis / 1000) / 60;
-            long seconds = (elapsedTimeMillis / 1000) % 60;
-            long milliseconds = elapsedTimeMillis % 1000;
-            System.out.printf("I( " + (i * batchSize) + " ): " + i + " :   %02d:%02d:%03d\n", minutes, seconds, milliseconds);
-//            System.out.println("I (k): "+ i);
-
-        }
-    }
-
-    @Autowired
-    PrivatePersonStageRowArchiveRepository privatePersonStageRowArchiveRepository;
-
-    @Test
-    void contextLoads(int batchSize) {
-//
-//        Page<PrivatePersonStageRow> page = privatePersonRowStageRepository.findAllByIsHandledPage(
-//                PageRequest.of(0, 1)
-//        );
-//
-        long startTime = System.currentTimeMillis();
-//        Slice<PrivatePersonStageRow> batch = privatePersonStageRowRepository.findAllByIsHandled(false, PageRequest.of(0, batchSize));
-//        Slice<PrivatePersonStageRow> batch = privatePersonStageRowRepository.findAll(PageRequest.of(0, batchSize));
-        Slice<PrivatePersonStageRow> batch = privatePersonStageRowRepository.findBy(PageRequest.of(0, batchSize));
-
-
-
-        long endTime = System.currentTimeMillis(); // Get end time
-        long duration = endTime - startTime;
-        long minutes = duration / 60000;
-        long seconds = (duration % 60000) / 1000;
-        long milliseconds = duration % 1000;
-        String t1 = String.format("Fetching rows: " + "%02d:%02d:%03d%n", minutes, seconds, milliseconds);
-
-//            PrivatePersonStageRow row = batch.getContent().get(0);
-//        privatePersonStageService.enrichStageRow(row);
-//        row.setHandled(true);
-//        privatePersonRowStageRepository.save(row);
-//        List<PrivatePersonStageRowArchive> rowsToArchive = new ArrayList<>();
-
-//        startTime = System.currentTimeMillis();
-        for (PrivatePersonStageRow row : batch.getContent()) {
-
-//        System.out.println(row);
-//            System.out.println(row.getLastNameUa());
-//
-            privatePersonStageService.enrichStageRow(row);
-            PrivatePersonStageRowArchive arch = new PrivatePersonStageRowArchive(row);
-            privatePersonStageRowArchiveRepository.save(arch);
-            privatePersonStageRowRepository.delete(row);
-
-
-//            row.setHandled(true);
-
-//            startTime = System.currentTimeMillis();
-//            rowsToArchive.add(new PrivatePersonStageRowArchive(row));
-
-//            endTime = System.currentTimeMillis(); // Get end time
-//            duration = endTime - startTime;
-//            minutes = duration / 60000;
-//            seconds = (duration % 60000) / 1000;
-//            milliseconds = duration % 1000;
-//            System.out.printf("PrivatePersonStageRowArchive arch = new PrivatePersonStageRowArchive(row);: " + "%02d:%02d:%03d%n", minutes, seconds, milliseconds);
-
-
-//            startTime = System.currentTimeMillis();
-//            privatePersonStageRowArchiveRepository.save(arch);
-//            endTime = System.currentTimeMillis(); // Get end time
-//            duration = endTime - startTime;
-//            minutes = duration / 60000;
-//            seconds = (duration % 60000) / 1000;
-//            milliseconds = duration % 1000;
-//            System.out.printf("privatePersonStageRowArchiveRepository.save(arch);: " + "%02d:%02d:%03d%n", minutes, seconds, milliseconds);
-
-
-//            startTime = System.currentTimeMillis();
-//            privatePersonStageRowRepository.delete(row);
-//            endTime = System.currentTimeMillis(); // Get end time
-//            duration = endTime - startTime;
-//            minutes = duration / 60000;
-//            seconds = (duration % 60000) / 1000;
-//            milliseconds = duration % 1000;
-//            System.out.printf(" privatePersonStageRowRepository.delete(row);;: " + "%02d:%02d:%03d%n", minutes, seconds, milliseconds);
-
-//            privatePersonStageRowRepository.save(row);
-        }
-//        endTime = System.currentTimeMillis(); // Get end time
-//        duration = endTime - startTime;
-//        minutes = duration / 60000;
-//        seconds = (duration % 60000) / 1000;
-//        milliseconds = duration % 1000;
-//        String t2 = String.format("Rows enrichment: " + "%02d:%02d:%03d%n", minutes, seconds, milliseconds);
-
-
-//        startTime = System.currentTimeMillis();
-//        privatePersonStageRowArchiveRepository.saveAll(rowsToArchive);
-//        endTime = System.currentTimeMillis(); // Get end time
-//        duration = endTime - startTime;
-//        minutes = duration / 60000;
-//        seconds = (duration % 60000) / 1000;
-//        milliseconds = duration % 1000;
-//        String t3 = String.format("Moving to archive: " + "%02d:%02d:%03d%n", minutes, seconds, milliseconds);
-
-//        startTime = System.currentTimeMillis();
-//        privatePersonStageRowRepository.deleteAll(batch.getContent());
-//        endTime = System.currentTimeMillis(); // Get end time
-//        duration = endTime - startTime;
-//        minutes = duration / 60000;
-//        seconds = (duration % 60000) / 1000;
-//        milliseconds = duration % 1000;
-//        String t4 = String.format("Deleting stage: " + "%02d:%02d:%03d%n", minutes, seconds, milliseconds);
-
-
-//        System.out.print(t1 + "; " +  t2 + "; " +  t3 + "; " +  t4);
-
-    }
-
-    @Autowired
     PrivatePersonRepository privatePersonRepository;
-
-    @Test
-    void getP() {
-        Optional<PrivatePerson> p = privatePersonRepository.findById(UUID.fromString("78adf6e9-8b7b-41ca-a345-5c2339605cb8"));
-        System.out.println(p);
-    }
-
-//    @Autowired
-//    PrivatePersonRepository privatePersonRepository;
 
     @Autowired
     PersonNameRepository personNameRepository;
@@ -186,52 +52,156 @@ class EnricherApplicationTests {
     PersonNameLinkRepository personNameLinkRepository;
 
     @Autowired
-    BirthdayPersonLinkRepository birthdayPersonLinkRepository;
+    PrivatePersonStageRowRepository privatePersonStageRowRepository;
+
+    @Autowired
+    PrivatePersonStageService privatePersonStageService;
+
+    @Autowired
+    InnRepository innRepository;
+
+    @Autowired
+    InnLinkRepository innLinkRepository;
+
+    @Autowired
+    TagTypeRepository tagTypeRepository;
+
+    @Autowired
+    TagRepository tagRepository;
+
+    @Autowired
+    TagAttributeLinkRepository tagAttributeLinkRepository;
+
+
+    @Test
+    void tst1() {
+        PrivatePerson p = new PrivatePerson();
+        p.setId(UUID.fromString("a26cb6ef-d8ed-4ae3-9025-b85cde8f2a27"));
+        p = privatePersonRepository.save(p);
+
+        PersonName pn = new PersonName();
+        pn.setLastName("БЄЛОЄНКО");
+        pn.setFirstName("ВАЛЕРІЙ");
+        pn.setPatronymicName("ОЛЕКСАНДРОВИЧ");
+        pn.setLanguageCode(LanguageCode.UA);
+        pn.setNoVowelsHash("БЛНКВЛРЛКСНДРВЧ");
+        pn.generateId();
+
+//        personNameRepository.save(pn);
+
+        PersonNameLink pnl = new PersonNameLink();
+        pnl.setPrivatePerson(p);
+        pnl.setPersonName(pn);
+        pnl.setSource("UNIT");
+        pnl.setActualDate(LocalDateTime.now());
+        pnl.generateId();
+
+        personNameLinkRepository.save(pnl);
+
+        Inn inn = new Inn();
+        inn.setCode("3435603818");
+        inn.generateId();
+
+
+        InnLink il = new InnLink();
+        il.setPrivatePerson(p);
+        il.setInn(inn);
+        il.setActualDate(LocalDateTime.now());
+        il.setSource("UNIT");
+        il.generateId();
+
+        innLinkRepository.save(il);
+
+
+        TagType tt1 = new TagType();
+        tt1.setId("TT1");
+        tt1.setDescription("TAG_1_DESC");
+        tagTypeRepository.save(tt1);
+
+        TagType tt2 = new TagType();
+        tt2.setId("TT2");
+        tt2.setDescription("TAG_2_DESC");
+        tagTypeRepository.save(tt2);
+
+        Tag t = new Tag();
+        t.setId(UUID.randomUUID());
+        t.setStartAt(LocalDate.now());
+        t.setTagType(tt1);
+        tagRepository.save(t);
+
+
+        TagAttributeLink tal = new TagAttributeLink();
+        tal.setAttribute(inn);
+        tal.setTag(t);
+        tal.setId(UUID.randomUUID());
+        tagAttributeLinkRepository.save(tal);
+
+
+    }
+
+
+    @Test
+    void tstLoop() {
+
+        int batchSize = 1000;
+
+        for (int i = 1; i <= 1000; i++) {
+
+            long startTime = System.currentTimeMillis();
+            tst2(batchSize);
+            long endTime = System.currentTimeMillis();
+            long elapsedTimeMillis = endTime - startTime;
+
+            // Convert milliseconds to minutes, seconds, and milliseconds
+            long minutes = (elapsedTimeMillis / 1000) / 60;
+            long seconds = (elapsedTimeMillis / 1000) % 60;
+            long milliseconds = elapsedTimeMillis % 1000;
+            System.out.printf("I( " + (i * batchSize) + " ): " + i + " :   %02d:%02d:%03d\n", minutes, seconds, milliseconds);
+
+        }
+    }
 
 
     @Autowired
-    AddressSimplePersonLinkRepository addressSimplePersonLinkRepository;
-
+    PrivatePersonStageRowArchiveRepository privatePersonStageRowArchiveRepository;
 
     @Test
-    void tst2() {
+    void tst2(Integer batchSize) {
 
-        PrivatePerson p = new PrivatePerson();
-//        p.setId(UUID.randomUUID());
-        p.setId(UUID.fromString("b249c81e-5c03-4bf2-85cc-7af13eedb8c3"));
 
-        AddressSimple a = new AddressSimple();
-        a.setAddress("asdadad");
-        a.generateId();
+        Slice<PrivatePersonStageRow> rows = privatePersonStageRowRepository.findBy(PageRequest.of(0, batchSize));
 
-        AddressSimplePersonLink aspl1 = new AddressSimplePersonLink();
-        aspl1.setAddressSimple(a);
-        aspl1.setPrivatePerson(p);
-        aspl1.setCreatedAt(LocalDateTime.now());
-        aspl1.setSource("UNIT");
-        aspl1.generateId();
+        if (rows.hasContent()) {
 
-        AddressSimplePersonLink aspl2 = new AddressSimplePersonLink();
-        aspl2.setAddressSimple(a);
-        aspl2.setPrivatePerson(p);
-        aspl2.setCreatedAt(LocalDateTime.now());
-        aspl2.setSource("UNIT");
-        aspl2.generateId();
+            List<PrivatePersonStageRowArchive> archiveRows = new ArrayList<>();
 
-        System.out.println("");
+            privatePersonStageService.enrichRows(rows.getContent());
 
-        addressSimplePersonLinkRepository.save(aspl1);
-        addressSimplePersonLinkRepository.save(aspl2);
+            for (PrivatePersonStageRow row : rows.getContent()) {
+                archiveRows.add(new PrivatePersonStageRowArchive(row));
+            }
+            privatePersonStageRowArchiveRepository.saveAll(archiveRows);
+            privatePersonStageRowRepository.deleteAll(rows.getContent());
+
+
+        }
+
 
     }
 
+    @Autowired
+    PrivatePersonService privatePersonService;
+
+    @Autowired
+    TestService testService;
 
     @Test
+//    @Transactional
     void tst3() {
-
-        privatePersonStageService.test();
-
+        testService.tst();
     }
+
+
 
 
 }

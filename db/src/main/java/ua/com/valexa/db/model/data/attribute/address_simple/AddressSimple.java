@@ -1,6 +1,9 @@
 package ua.com.valexa.db.model.data.attribute.address_simple;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.Data;
 import ua.com.valexa.db.model.data.attribute.Attribute;
 
@@ -14,7 +17,6 @@ import java.util.UUID;
         })
 )
 @Data
-@DiscriminatorValue("ADDRESS_SIMPLE")
 public class AddressSimple extends Attribute {
     @Column(name = "address")
     private String address;

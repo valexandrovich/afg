@@ -1,11 +1,10 @@
 package ua.com.valexa.db.model.data.attribute.person_name;
 
+
 import jakarta.persistence.*;
 import lombok.Data;
-import ua.com.valexa.db.model.data.base_objects.PrivatePerson;
-import ua.com.valexa.db.model.stage.PrivatePersonStageRow;
+import ua.com.valexa.db.model.data.base_object.PrivatePerson;
 
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
@@ -21,22 +20,20 @@ import java.util.UUID;
 @Data
 public class PersonNameLink {
     @Id
-//    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id")
     private UUID id;
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(nullable = false, name = "private_person_id", foreignKey = @ForeignKey(name = "person_name_link__private_person_fk"))
+
+    @ManyToOne
+    @JoinColumn(name = "private_person_id", foreignKey = @ForeignKey(name = "person_name_link__private_person__fk"))
     private PrivatePerson privatePerson;
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(nullable = false, name = "person_name_id", foreignKey = @ForeignKey(name = "person_name_link__person_name_fk"))
+    @ManyToOne
+    @JoinColumn(name = "person_name_id", foreignKey = @ForeignKey(name = "person_name_link__person_name__fk"))
     private PersonName personName;
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
-    @Column(name = "source", nullable = false)
+    @Column(name = "actual_date")
+    private LocalDateTime actualDate;
+    @Column(name = "is_active")
+    private Boolean isActive = true;
+    @Column(name = "source")
     private String source;
-//    @ManyToOne
-//    @JoinColumn(name = "stage_row_id", foreignKey = @ForeignKey(name = "person_name_link_pp_stage_fk"))
-//    private PrivatePersonStageRow stageRow;
 
     @Override
     public String toString() {
@@ -59,6 +56,6 @@ public class PersonNameLink {
     }
 
     public void generateId() {
-        setId(UUID.nameUUIDFromBytes(toString().getBytes(StandardCharsets.UTF_8)));
+        this.id = UUID.nameUUIDFromBytes(toString().getBytes());
     }
 }

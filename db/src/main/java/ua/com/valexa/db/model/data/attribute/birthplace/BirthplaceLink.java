@@ -2,8 +2,8 @@ package ua.com.valexa.db.model.data.attribute.birthplace;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import ua.com.valexa.db.model.data.base_objects.PrivatePerson;
-import ua.com.valexa.db.model.stage.PrivatePersonStageRow;
+import ua.com.valexa.db.model.data.attribute.birthday.Birthday;
+import ua.com.valexa.db.model.data.base_object.PrivatePerson;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -18,25 +18,19 @@ import java.util.UUID;
                 @UniqueConstraint(name = "birthplace_link__full__uindex", columnNames = {"private_person_id", "birthplace_id", "source"})
         })
 @Data
-public class BithplaceLink {
+public class BirthplaceLink {
     @Id
-//    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id")
     private UUID id;
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "private_person_id", foreignKey = @ForeignKey(name = "birthplace_link__private_person_fk"))
-    private PrivatePerson privatePerson;
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "birthplace_id", foreignKey = @ForeignKey(name = "birthplace_link__birthplace_fk"))
-    private Birthplace birthplace;
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
-    @Column(name = "source")
-    private String source;
 
-//    @ManyToOne
-//    @JoinColumn(name = "stage_row_id", foreignKey = @ForeignKey(name = "birthplace_link_pp_stage_fk"))
-//    private PrivatePersonStageRow stageRow;
+    @ManyToOne
+    @JoinColumn(name = "private_person_id", foreignKey = @ForeignKey(name = "birthplace_link__private_person__fk"))
+    private PrivatePerson privatePerson;
+    @ManyToOne
+    @JoinColumn(name = "birthplace_id", foreignKey = @ForeignKey(name = "birthplace_link__birthplace__fk"))
+    private Birthplace birthplace;
+    private LocalDateTime actualDate;
+    private Boolean isActive = true;
+    private String source;
 
     @Override
     public String toString() {
@@ -49,7 +43,7 @@ public class BithplaceLink {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        BithplaceLink that = (BithplaceLink) o;
+        BirthplaceLink that = (BirthplaceLink) o;
         return Objects.equals(privatePerson, that.privatePerson) && Objects.equals(birthplace, that.birthplace) && Objects.equals(source, that.source);
     }
 

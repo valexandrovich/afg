@@ -2,18 +2,20 @@ package ua.com.valexa.db.model.data.attribute;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import ua.com.valexa.db.model.data.tag.TagAttributeLink;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(schema = "data", name = "attribute")
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @Data
-@Inheritance(strategy = InheritanceType.JOINED)
-@DiscriminatorColumn(name = "type", discriminatorType = DiscriminatorType.STRING)
 public abstract class Attribute {
     @Id
-//    @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
-    @Column(name = "type", insertable = false, updatable = false)
-    private String type;
+
+//    @OneToMany(mappedBy = "attribute", fetch = FetchType.EAGER)
+//    private List<TagAttributeLink> tagAttributeLinks = new ArrayList<>();
+
 }

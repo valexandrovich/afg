@@ -1,28 +1,27 @@
 package ua.com.valexa.db.service.data.attribute.address_simple;
 
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import ua.com.valexa.db.model.data.attribute.address_simple.AddressSimple;
 import ua.com.valexa.db.model.data.attribute.birthday.Birthday;
 import ua.com.valexa.db.repository.data.attribute.address_simple.AddressSimpleRepository;
 import ua.com.valexa.db.repository.data.attribute.birthday.BirthdayRepository;
 
-import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class AddressSimpleService {
     @Autowired
     AddressSimpleRepository addressSimpleRepository;
 
-    public AddressSimple save(AddressSimple addressSimple) {
-        try {
-            return addressSimpleRepository.save(addressSimple);
-        } catch (DataIntegrityViolationException e) {
-            Optional<AddressSimple> stored = addressSimpleRepository.findByAddress(
-                    addressSimple.getAddress()
-            );
-            return stored.orElse(null);
-        }
+    @Async
+    @Transactional
+    public CompletableFuture<Void> saveAll(Set<AddressSimple> addressSimples){
+        return CompletableFuture.runAsync(()->{
+            addressSimpleRepository.saveAll(addressSimples);
+        });
     }
 }

@@ -1,12 +1,11 @@
 package ua.com.valexa.db.utils;
 
-import ua.com.valexa.db.model.data.enums.LanguageCode;
+import ua.com.valexa.db.model.enums.LanguageCode;
 import ua.com.valexa.db.model.data.attribute.person_name.PersonName;
 
 public class NoVowelsHashUtils {
+
     private static final String NO_VOLWES_REGEX = "[-аАоОуУэЭєЄеЕыЫяЯёЁиИюЮіІїЇьЬъЪгГґҐйЙ'ʼ\\\\s\\\\p{Punct}]";
-
-
     public static String calcNoVowelsHash(PersonName personName) {
         if (LanguageCode.UA.equals(personName.getLanguageCode())) {
             return calcNoVolwesHash(

@@ -1,6 +1,9 @@
 package ua.com.valexa.db.model.data.attribute.birthplace;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.Data;
 import ua.com.valexa.db.model.data.attribute.Attribute;
 
@@ -13,10 +16,9 @@ import java.util.UUID;
                 "birthplace"
         })
 )
-@DiscriminatorValue("BIRTHPLACE")
 @Data
 public class Birthplace extends Attribute {
-    @Column(name = "birthplace", length = 255)
+    @Column(name = "birthplace")
     private String birthplace;
 
     @Override

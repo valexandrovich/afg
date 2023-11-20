@@ -1,36 +1,27 @@
 package ua.com.valexa.db.service.data.attribute.address;
 
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import ua.com.valexa.db.model.data.attribute.address.Address;
+import ua.com.valexa.db.model.data.attribute.address_simple.AddressSimple;
 import ua.com.valexa.db.repository.data.attribute.address.AddressRepository;
+import ua.com.valexa.db.repository.data.attribute.address_simple.AddressSimpleRepository;
 
-import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class AddressService {
     @Autowired
     AddressRepository addressRepository;
 
-    public Address save(Address address) {
-        try {
-            return addressRepository.save(address);
-        } catch (DataIntegrityViolationException e) {
-            Optional<Address> stored = addressRepository.findByCountryAndRegionAndCountyAndCityTypeAndCityAndStreetTypeAndStreetAndBuildingNumberAndBuildingLetterAndBuildingPartAndApartment(
-                    address.getCountry(),
-                    address.getRegion(),
-                    address.getCounty(),
-                    address.getCityType(),
-                    address.getCity(),
-                    address.getStreetType(),
-                    address.getStreet(),
-                    address.getBuildingNumber(),
-                    address.getBuildingLetter(),
-                    address.getBuildingPart(),
-                    address.getApartment()
-            );
-            return stored.orElse(null);
-        }
+    @Async
+    @Transactional
+    public CompletableFuture<Void> saveAll(Set<Address> addresses){
+        return CompletableFuture.runAsync(()->{
+            addressRepository.saveAll(addresses);
+        });
     }
 }

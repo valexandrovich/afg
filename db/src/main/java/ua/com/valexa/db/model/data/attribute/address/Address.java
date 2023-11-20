@@ -36,7 +36,6 @@ import java.util.UUID;
         })
 )
 @Data
-@DiscriminatorValue("ADDRESS")
 public class Address extends Attribute {
     @Column(name = "country", length = 255)
     private String country = "";

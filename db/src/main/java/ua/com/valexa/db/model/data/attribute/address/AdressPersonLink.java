@@ -2,8 +2,7 @@ package ua.com.valexa.db.model.data.attribute.address;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import ua.com.valexa.db.model.data.base_objects.PrivatePerson;
-import ua.com.valexa.db.model.stage.PrivatePersonStageRow;
+import ua.com.valexa.db.model.data.base_object.PrivatePerson;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -18,24 +17,20 @@ import java.util.UUID;
                 @UniqueConstraint(name = "address_person_link__full__uindex", columnNames = {"private_person_id", "address_id", "source"})
         })
 @Data
-public class AddressPersonLink {
+public class AdressPersonLink {
+
     @Id
-//    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id")
     private UUID id;
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "private_person_id", foreignKey = @ForeignKey(name = "address_person_link__private_person_fk"))
+
+    @ManyToOne
+    @JoinColumn(name = "private_person_id", foreignKey = @ForeignKey(name = "address_person_link__private_person__fk"))
     private PrivatePerson privatePerson;
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "address_id", foreignKey = @ForeignKey(name = "address_person_link__address_fk"))
+    @ManyToOne
+    @JoinColumn(name = "address_id", foreignKey = @ForeignKey(name = "address_person_link__address__fk"))
     private Address address;
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
-    @Column(name = "source")
+    private LocalDateTime actualDate;
+    private Boolean isActive = true;
     private String source;
-//    @ManyToOne
-//    @JoinColumn(name = "stage_row_id", foreignKey = @ForeignKey(name = "address_person_link_pp_stage_fk"))
-//    private PrivatePersonStageRow stageRow;
 
     @Override
     public String toString() {
@@ -48,7 +43,7 @@ public class AddressPersonLink {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        AddressPersonLink that = (AddressPersonLink) o;
+        AdressPersonLink that = (AdressPersonLink) o;
         return Objects.equals(privatePerson, that.privatePerson) && Objects.equals(address, that.address) && Objects.equals(source, that.source);
     }
 
@@ -60,8 +55,5 @@ public class AddressPersonLink {
     public void generateId(){
         setId(UUID.nameUUIDFromBytes(toString().getBytes()));
     }
-
-
-
-
 }
+

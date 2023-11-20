@@ -1,3 +1,6 @@
-logging:
-  level:
-    org.hibernate.SQL: ERROR
+#logging:
+#  level:
+#    org.hibernate.SQL: OFF
+#    org.hibernate.engine.jdbc.spi.SqlExceptionHelper: OFF
+
+

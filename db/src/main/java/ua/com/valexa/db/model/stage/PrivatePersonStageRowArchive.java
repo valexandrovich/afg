@@ -3,8 +3,8 @@ package ua.com.valexa.db.model.stage;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ua.com.valexa.db.model.data.enums.Country;
-import ua.com.valexa.db.model.data.enums.Sex;
+import ua.com.valexa.db.model.enums.Country;
+import ua.com.valexa.db.model.enums.Sex;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -191,6 +191,4 @@ public class PrivatePersonStageRowArchive {
 
 
     }
-
-
 }

@@ -1,16 +1,17 @@
 package ua.com.valexa.db.model.stage;
 
+
 import jakarta.persistence.*;
 import lombok.Data;
-import ua.com.valexa.db.model.data.enums.Country;
-import ua.com.valexa.db.model.data.enums.Sex;
+import ua.com.valexa.db.model.enums.Country;
+import ua.com.valexa.db.model.enums.Sex;
 
 import java.time.LocalDate;
 import java.util.UUID;
 
-@Data
 @Entity
 @Table(schema="stage", name="pp_stage")
+@Data
 public class PrivatePersonStageRow {
     @Id
     private UUID id;
@@ -144,6 +145,4 @@ public class PrivatePersonStageRow {
         return lastNameEn != null && !lastNameEn.isEmpty() &&
                 firstNameEn != null && !firstNameEn.isEmpty();
     }
-
-
 }

@@ -2,8 +2,7 @@ package ua.com.valexa.db.model.data.attribute.birthday;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import ua.com.valexa.db.model.data.base_objects.PrivatePerson;
-import ua.com.valexa.db.model.stage.PrivatePersonStageRow;
+import ua.com.valexa.db.model.data.base_object.PrivatePerson;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -18,38 +17,32 @@ import java.util.UUID;
                 @UniqueConstraint(name = "birthday_person_link__full__uindex", columnNames = {"private_person_id", "birthday_id", "source"})
         })
 @Data
-public class BirthdayPersonLink {
+public class BirthdayLink {
     @Id
-//    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id")
     private UUID id;
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "private_person_id", foreignKey = @ForeignKey(name = "birthday_person_link__private_person_fk"))
-    private PrivatePerson privatePerson;
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "birthday_id", foreignKey = @ForeignKey(name = "birthday_person_link__birthday_fk"))
-    private Birthday birthday;
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
-    @Column(name = "source")
-    private String source;
 
-//    @ManyToOne
-//    @JoinColumn(name = "stage_row_id", foreignKey = @ForeignKey(name = "birthday_person_link_pp_stage_fk"))
-//    private PrivatePersonStageRow stageRow;
+    @ManyToOne
+    @JoinColumn(name = "private_person_id", foreignKey = @ForeignKey(name = "birthday_link__private_person__fk"))
+    private PrivatePerson privatePerson;
+    @ManyToOne
+    @JoinColumn(name = "birthday_id", foreignKey = @ForeignKey(name = "birthday_link__birthday__fk"))
+    private Birthday birthday;
+    private LocalDateTime actualDate;
+    private Boolean isActive = true;
+    private String source;
 
     @Override
     public String toString() {
         return privatePerson.getId().toString() + '_' +
-               birthday.getId().toString() + '_' +
-               source;
+                birthday.getId().toString() + '_' +
+                source;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        BirthdayPersonLink that = (BirthdayPersonLink) o;
+        BirthdayLink that = (BirthdayLink) o;
         return Objects.equals(privatePerson, that.privatePerson) && Objects.equals(birthday, that.birthday) && Objects.equals(source, that.source);
     }
 

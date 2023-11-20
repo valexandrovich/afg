@@ -2,9 +2,8 @@ package ua.com.valexa.db.model.data.attribute.person_name;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import ua.com.valexa.db.model.data.enums.LanguageCode;
 import ua.com.valexa.db.model.data.attribute.Attribute;
-import ua.com.valexa.db.utils.NoVowelsHashUtils;
+import ua.com.valexa.db.model.enums.LanguageCode;
 
 import java.util.HashSet;
 import java.util.Objects;
@@ -18,38 +17,35 @@ import java.util.UUID;
         @Index(name = "patronymic_name__index", columnList = "patronymic_name"),
         @Index(name = "no_vowels_hash__index", columnList = "no_vowels_hash")
 },
-uniqueConstraints = @UniqueConstraint(name = "person_name__full__uindex", columnNames = {
-        "last_name", "first_name", "patronymic_name", "language_code"
-})
+        uniqueConstraints = @UniqueConstraint(name = "person_name__full__uindex", columnNames = {
+                "last_name", "first_name", "patronymic_name", "language_code"
+        })
 )
 @Data
-@DiscriminatorValue("PERSON_NAME")
 public class PersonName extends Attribute {
 //    @Id
-//    @GeneratedValue(strategy = GenerationType.AUTO)
-//    @Column(name = "id")
 //    private UUID id;
     @Column(name = "last_name")
-    private String lastName ="";
+    private String lastName;
     @Column(name = "first_name")
-    private String firstName ="";
+    private String firstName;
     @Column(name = "patronymic_name")
-    private String patronymicName ="";
-    @Column(name = "language_code")
+    private String patronymicName;
+    @Column(name = "language_code", nullable = false)
     @Enumerated(EnumType.STRING)
-    private LanguageCode languageCode=LanguageCode.UA;
+    private LanguageCode languageCode = LanguageCode.UA;
     @Column(name = "no_vowels_hash")
-    private String noVowelsHash ="";
+    private String noVowelsHash;
 
-    @OneToMany(mappedBy = "personName", fetch = FetchType.LAZY)
-    private Set<PersonNameLink> nameLinks = new HashSet<>();
+    @OneToMany(mappedBy = "personName", fetch = FetchType.EAGER)
+    private Set<PersonNameLink> personNameLinks = new HashSet<>();
 
     @Override
     public String toString() {
-        return lastName + '_' +
-               firstName + '_' +
-               patronymicName + '_' +
-               languageCode;
+        return (lastName == null ? "" : lastName) + '_' +
+                (firstName == null ? "" : firstName) + '_' +
+                (patronymicName == null ? "" : patronymicName) + '_' +
+                languageCode;
     }
 
     @Override
@@ -63,10 +59,6 @@ public class PersonName extends Attribute {
     @Override
     public int hashCode() {
         return Objects.hash(lastName, firstName, patronymicName, languageCode);
-    }
-
-    public void generateNoVolwesHash(){
-        this.noVowelsHash =  NoVowelsHashUtils.calcNoVowelsHash(this);
     }
 
     public void generateId(){
