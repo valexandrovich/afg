@@ -168,20 +168,49 @@ class EnricherApplicationTests {
     @Test
     void tst2(Integer batchSize) {
 
-
+        long startTime = System.currentTimeMillis();
         Slice<PrivatePersonStageRow> rows = privatePersonStageRowRepository.findBy(PageRequest.of(0, batchSize));
+        long endTime = System.currentTimeMillis();
+        long elapsedTimeMillis = endTime - startTime;
+        long minutes = (elapsedTimeMillis / 1000) / 60;
+        long seconds = (elapsedTimeMillis / 1000) % 60;
+        long milliseconds = elapsedTimeMillis % 1000;
+        System.out.printf( "FETCHING STAGE"      + " :   %02d:%02d:%03d\n", minutes, seconds, milliseconds);
+
 
         if (rows.hasContent()) {
 
             List<PrivatePersonStageRowArchive> archiveRows = new ArrayList<>();
 
+            startTime = System.currentTimeMillis();
             privatePersonStageService.enrichRows(rows.getContent());
+            endTime = System.currentTimeMillis();
+             elapsedTimeMillis = endTime - startTime;
+             minutes = (elapsedTimeMillis / 1000) / 60;
+             seconds = (elapsedTimeMillis / 1000) % 60;
+             milliseconds = elapsedTimeMillis % 1000;
+            System.out.printf( "ENRICH ROWS"      + " :   %02d:%02d:%03d\n", minutes, seconds, milliseconds);
 
             for (PrivatePersonStageRow row : rows.getContent()) {
                 archiveRows.add(new PrivatePersonStageRowArchive(row));
             }
+            startTime = System.currentTimeMillis();
             privatePersonStageRowArchiveRepository.saveAll(archiveRows);
+            endTime = System.currentTimeMillis();
+            elapsedTimeMillis = endTime - startTime;
+            minutes = (elapsedTimeMillis / 1000) / 60;
+            seconds = (elapsedTimeMillis / 1000) % 60;
+            milliseconds = elapsedTimeMillis % 1000;
+            System.out.printf( "SAVE ARCHIVE ROWS"      + " :   %02d:%02d:%03d\n", minutes, seconds, milliseconds);
+
+            startTime = System.currentTimeMillis();
             privatePersonStageRowRepository.deleteAll(rows.getContent());
+            endTime = System.currentTimeMillis();
+            elapsedTimeMillis = endTime - startTime;
+            minutes = (elapsedTimeMillis / 1000) / 60;
+            seconds = (elapsedTimeMillis / 1000) % 60;
+            milliseconds = elapsedTimeMillis % 1000;
+            System.out.printf( "DELETE STAGE ROWS"      + " :   %02d:%02d:%03d\n", minutes, seconds, milliseconds);
 
 
         }
