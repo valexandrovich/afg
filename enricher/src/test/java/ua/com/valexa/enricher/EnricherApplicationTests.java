@@ -145,7 +145,7 @@ class EnricherApplicationTests {
 
         int batchSize = 1000;
 
-        for (int i = 1; i <= 1000; i++) {
+        for (int i = 1; i <= 5000; i++) {
 
             long startTime = System.currentTimeMillis();
             tst2(batchSize);
