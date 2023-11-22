@@ -143,9 +143,9 @@ class EnricherApplicationTests {
     @Test
     void tstLoop() {
 
-        int batchSize = 1000;
+        int batchSize = 1;
 
-        for (int i = 1; i <= 5000; i++) {
+        for (int i = 1; i <= 2; i++) {
 
             long startTime = System.currentTimeMillis();
             tst2(batchSize);

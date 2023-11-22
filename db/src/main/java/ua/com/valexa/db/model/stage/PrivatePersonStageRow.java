@@ -10,7 +10,8 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity
-@Table(schema="stage", name="pp_stage")
+//@Table(schema="stage", name="pp_stage")
+@Table(schema="stage", name="pp_stage_tmp")
 @Data
 public class PrivatePersonStageRow {
     @Id
