@@ -28,6 +28,7 @@ import ua.com.valexa.db.repository.data.base_object.PrivatePersonRepository;
 import ua.com.valexa.db.repository.stage.PrivatePersonStageRowArchiveRepository;
 import ua.com.valexa.db.repository.stage.PrivatePersonStageRowRepository;
 import ua.com.valexa.db.service.data.base_object.PrivatePersonService;
+import ua.com.valexa.db.utils.NoVowelsHashUtils;
 import ua.com.valexa.enricher.service.PrivatePersonStageService;
 import ua.com.valexa.enricher.service.TestService;
 
@@ -227,7 +228,172 @@ class EnricherApplicationTests {
     @Test
 //    @Transactional
     void tst3() {
-        testService.tst();
+
+        List<PrivatePersonStageRow> rows = new ArrayList<>();
+
+//        rows.add(rowNameUaInn());
+
+        rows.add(rowFull());
+//        rows.add(rowTemp());
+//        rows.add(rowUaNameInn());
+//        rows.add(rowUaNameBirthday());
+        privatePersonStageService.enrichRows(rows);
+
+
+    }
+
+    PrivatePersonStageRow rowTemp(){
+        PrivatePersonStageRow row = new PrivatePersonStageRow();
+        row.setId(UUID.randomUUID());
+        row.setSource("UNIT");
+
+//        row.setLastNameUa("БІЛОЄНКО");
+//        row.setFirstNameUa("ВOЛЕРІЙ");
+//        row.setPatronymicNameUa("АЛЕКСАНДРОВИЧ");
+
+        row.setLastNameRu("БЕЛОЕНКО");
+        row.setFirstNameRu("ВАЛЕРИЙ");
+        row.setPatronymicNameRu("АЛЕКСАНДРОВИЧ");
+
+//        row.setLastNameEn("BIELOIENKO");
+//        row.setFirstNameEn("VALERII");
+//        row.setPatronymicNameEn("OLEKSANDROVICH");
+
+//        row.setBirthday(LocalDate.of(1994,1,23));
+
+//        row.setBirthplace("УКРАЇНА, ДОНЕЦЬКА ОБЛ., М. ГОРЛІВКА");
+
+        row.setInn("3435603818");
+
+        row.setLocalPassportSerial("AA");
+        row.setLocalPassportNumber("123456");
+
+//        row.setAddressSimple("УКРАЇНА, ДОНЕЦЬКА ОБЛ., М. ГОРЛІВКА, ВУЛ. ХАСАНІВСЬКА, Б. 10, КВ. 3");
+
+//        row.setAddressCountry("УКРАЇНА");
+//        row.setAddressRegion("ДОНЕЦЬКА");
+//        row.setAddressCounty("ЯСИНУВАТСЬКИЙ");
+//        row.setAddressCityType("М");
+//        row.setAddressCity("ГОРЛОІВКА");
+//        row.setAddressStreetType("ВУЛ");
+//        row.setAddressStreet("ХАСАНІВСЬКА");
+//        row.setAddressBuildingNumber("10");
+//        row.setAddressBuildingLetter("А");
+//        row.setAddressBuildingPart("1");
+//        row.setAddressApartment("3");
+
+        return row;
+
+
+
+    }
+
+    PrivatePersonStageRow rowFull(){
+        PrivatePersonStageRow row = new PrivatePersonStageRow();
+        row.setId(UUID.randomUUID());
+        row.setSource("UNIT");
+
+        row.setLastNameUa("БЄЛОЄНКО");
+        row.setFirstNameUa("ВАЛЕРІЙ");
+        row.setPatronymicNameUa("ОЛЕКСАНДРОВИЧ");
+
+        row.setLastNameRu("БЕЛОЕНКО");
+        row.setFirstNameRu("ВАЛЕРИЙ");
+        row.setPatronymicNameRu("АЛЕКСАНДРОВИЧ");
+
+        row.setLastNameEn("BIELOIENKO");
+        row.setFirstNameEn("VALERII");
+        row.setPatronymicNameEn("OLEKSANDROVICH");
+
+        row.setBirthday(LocalDate.of(1994,1,23));
+
+        row.setBirthplace("УКРАЇНА, ДОНЕЦЬКА ОБЛ., М. ГОРЛІВКА");
+
+        row.setInn("3435603818");
+
+        row.setLocalPassportSerial("AA");
+        row.setLocalPassportNumber("123456");
+
+        row.setAddressSimple("УКРАЇНА, ДОНЕЦЬКА ОБЛ., М. ГОРЛІВКА, ВУЛ. ХАСАНІВСЬКА, Б. 10, КВ. 3");
+
+        row.setAddressCountry("УКРАЇНА");
+        row.setAddressRegion("ДОНЕЦЬКА");
+        row.setAddressCounty("ЯСИНУВАТСЬКИЙ");
+        row.setAddressCityType("М");
+        row.setAddressCity("ГОРЛОІВКА");
+        row.setAddressStreetType("ВУЛ");
+        row.setAddressStreet("ХАСАНІВСЬКА");
+        row.setAddressBuildingNumber("10");
+        row.setAddressBuildingLetter("А");
+        row.setAddressBuildingPart("1");
+        row.setAddressApartment("3");
+
+        return row;
+
+
+
+    }
+
+
+    PrivatePersonStageRow rowNameUaInn(){
+        PrivatePersonStageRow row = new PrivatePersonStageRow();
+        row.setId(UUID.randomUUID());
+        row.setSource("UNIT");
+
+        row.setLastNameUa("БЄЛОЄНКО");
+        row.setFirstNameUa("ВАЛЕРІЙ");
+        row.setPatronymicNameUa("ОЛЕКСАНДРОВИЧ");
+
+
+//        row.setBirthday(LocalDate.of(1994,1,23));
+
+
+        row.setInn("3435603818");
+
+
+
+        return row;
+
+
+
+    }
+
+    PrivatePersonStageRow rowUaNameInn(){
+        PrivatePersonStageRow row = new PrivatePersonStageRow();
+        row.setId(UUID.randomUUID());
+        row.setSource("UNIT");
+        row.setLastNameUa("БЄЛОЄНКО");
+        row.setFirstNameUa("ВАЛЕРІЙ");
+        row.setPatronymicNameUa("ОЛЕКСАНДРОВИЧ");
+        row.setInn("3435603818");
+        return row;
+    }
+
+    PrivatePersonStageRow rowUaNameBirthday(){
+        PrivatePersonStageRow row = new PrivatePersonStageRow();
+        row.setId(UUID.randomUUID());
+        row.setSource("UNIT");
+        row.setLastNameUa("БЄЛОЄНКО");
+        row.setFirstNameUa("ВАЛЕРІЙ");
+        row.setPatronymicNameUa("ОЛЕКСАНДРОВИЧ");
+        row.setBirthday(LocalDate.of(1994,1,23));
+        return row;
+    }
+
+
+
+    @Test
+    void tst5(){
+        PersonName pn = new PersonName();
+        pn.setLastName("БЄЛОЄНКО");
+        pn.setFirstName("ВАЛЕРІЙ");
+        pn.setPatronymicName("ОЛЕКСАНДРОВИЧ");
+        pn.setLanguageCode(LanguageCode.UA);
+        pn.setNoVowelsHash(NoVowelsHashUtils.calcNoVowelsHash(pn));
+        pn.generateId();
+
+        System.out.println(pn.getId());
+        System.out.println(pn);
     }
 
 
