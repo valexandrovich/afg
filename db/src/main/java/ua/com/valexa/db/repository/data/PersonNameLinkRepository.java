@@ -1,8 +1,8 @@
-package ua.com.valexa.db.repository.data.attribute.person_name;
+package ua.com.valexa.db.repository.data;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import ua.com.valexa.db.model.data.attribute.person_name.PersonNameLink;
+import ua.com.valexa.db.model.data.PersonNameLink;
 
 import java.util.UUID;
 
