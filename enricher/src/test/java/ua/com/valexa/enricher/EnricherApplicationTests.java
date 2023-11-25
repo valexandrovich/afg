@@ -27,6 +27,7 @@ import ua.com.valexa.db.repository.data.attribute.person_name.PersonNameReposito
 import ua.com.valexa.db.repository.data.base_object.PrivatePersonRepository;
 import ua.com.valexa.db.repository.stage.PrivatePersonStageRowArchiveRepository;
 import ua.com.valexa.db.repository.stage.PrivatePersonStageRowRepository;
+import ua.com.valexa.db.service.data.attribute.person_name.PersonNameService;
 import ua.com.valexa.db.service.data.base_object.PrivatePersonService;
 import ua.com.valexa.db.utils.NoVowelsHashUtils;
 import ua.com.valexa.enricher.service.PrivatePersonStageService;
@@ -34,10 +35,7 @@ import ua.com.valexa.enricher.service.TestService;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 @SpringBootTest
@@ -48,6 +46,9 @@ class EnricherApplicationTests {
 
     @Autowired
     PersonNameRepository personNameRepository;
+
+    @Autowired
+    PersonNameService personNameService;
 
     @Autowired
     PersonNameLinkRepository personNameLinkRepository;
@@ -144,9 +145,9 @@ class EnricherApplicationTests {
     @Test
     void tstLoop() {
 
-        int batchSize = 1;
+        int batchSize = 1000;
 
-        for (int i = 1; i <= 2; i++) {
+        for (int i = 1; i <= 1000; i++) {
 
             long startTime = System.currentTimeMillis();
             tst2(batchSize);
@@ -394,6 +395,55 @@ class EnricherApplicationTests {
 
         System.out.println(pn.getId());
         System.out.println(pn);
+    }
+
+
+    @Test
+    void tst6(){
+        int batchSize = 1000;
+        Slice<PrivatePersonStageRow> rows = privatePersonStageRowRepository.findBy(PageRequest.of(0, batchSize));
+
+        System.out.println(rows.getContent().size());
+
+
+        Set<String> hashes = new HashSet<>();
+
+        for (PrivatePersonStageRow row : rows.getContent()){
+
+            if (row.hasUaName()){
+                PersonName pn = new PersonName();
+                pn.setLanguageCode(LanguageCode.UA);
+                pn.setLastName(row.getLastNameUa());
+                pn.setFirstName(row.getFirstNameUa());
+                pn.setPatronymicName(row.getPatronymicNameUa());
+                pn.setNoVowelsHash(NoVowelsHashUtils.calcNoVowelsHash(pn));
+                hashes.add(pn.getNoVowelsHash());
+            }
+
+            if (row.hasRuName()){
+                PersonName pn = new PersonName();
+                pn.setLanguageCode(LanguageCode.RU);
+                pn.setLastName(row.getLastNameRu());
+                pn.setFirstName(row.getFirstNameRu());
+                pn.setPatronymicName(row.getPatronymicNameRu());
+                pn.setNoVowelsHash(NoVowelsHashUtils.calcNoVowelsHash(pn));
+                hashes.add(pn.getNoVowelsHash());
+            }
+        }
+
+        System.out.println("HASHES: " + hashes.size());
+
+        CompletableFuture<Set<PersonName>> personNameFuture =  personNameService.findByNoVowelsHashes(hashes);
+        Set<PersonName> personNames = personNameFuture.join();
+        System.out.println("PERSON NAMES CANDIDATES: " + personNames.size());
+
+//        CompletableFuture<Set<PrivatePerson>> allCandidatesFuture =  privatePersonService.findCandidatesByNoVowelsHashes(hashes);
+//        Set<PrivatePerson> allCandidates = allCandidatesFuture.join();
+//
+//        System.out.println("CANDIDATES: " + allCandidates.size());
+
+
+
     }
 
 

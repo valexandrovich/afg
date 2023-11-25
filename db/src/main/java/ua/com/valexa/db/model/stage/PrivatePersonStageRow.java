@@ -11,7 +11,7 @@ import java.util.UUID;
 
 @Entity
 //@Table(schema="stage", name="pp_stage")
-@Table(schema="stage", name="pp_stage_tmp")
+@Table(schema="stage", name="pp_stage")
 @Data
 public class PrivatePersonStageRow {
     @Id

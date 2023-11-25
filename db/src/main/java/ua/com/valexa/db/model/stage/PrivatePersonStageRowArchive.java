@@ -13,7 +13,7 @@ import java.util.UUID;
 @Data
 @Entity
 //@Table(schema = "stage", name = "pp_stage_archive")
-@Table(schema = "stage", name = "pp_stage_archive_tmp")
+@Table(schema = "stage", name = "pp_stage_archive")
 @NoArgsConstructor
 public class PrivatePersonStageRowArchive {
     @Id

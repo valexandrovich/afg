@@ -51,6 +51,11 @@ public class NoVowelsHashUtils {
         result = result.replaceAll("ТРОФИМ", "ТРОХИМ");
         result = result.replaceAll("ЕВСТАФИЙ", "ЄВСТАХІЙ");
 
+        // Added 22.11.2023
+        result = result.replaceAll("ПРОКОФ", "ПРОКОП");
+        result = result.replaceAll("АФАНАС", "ОПАНАС");
+        // -----------------
+
         result = result.replaceAll("НАДЕЖДА", "НАДІЯ");
         result = result.replaceAll("ЕВФРОСИНИЯ", "ЄФРОСИНІЯ");
         result = result.replaceAll("КРИСТИНА", "ХРИСТИНА");
