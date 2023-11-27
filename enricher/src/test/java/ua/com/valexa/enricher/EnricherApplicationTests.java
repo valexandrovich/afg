@@ -1,22 +1,15 @@
 package ua.com.valexa.enricher;
 
 import jakarta.transaction.Transactional;
-import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import ua.com.valexa.db.model.User;
-import ua.com.valexa.db.model.UserAt;
-import ua.com.valexa.db.model.UserIn;
-import ua.com.valexa.db.model.UserOn;
 import ua.com.valexa.db.model.data.attribute.inn.Inn;
 import ua.com.valexa.db.model.data.attribute.inn.InnLink;
 import ua.com.valexa.db.model.data.attribute.person_name.PersonName;
 import ua.com.valexa.db.model.data.attribute.person_name.PersonNameLink;
 import ua.com.valexa.db.model.data.base_object.PrivatePerson;
 import ua.com.valexa.db.model.enums.LanguageCode;
-import ua.com.valexa.db.repository.UserAtRepository;
-import ua.com.valexa.db.repository.UserRepository;
 import ua.com.valexa.db.repository.data.*;
 import ua.com.valexa.db.service.PersonNameLinkService;
 import ua.com.valexa.db.service.PersonNameService;
@@ -189,76 +182,10 @@ class EnricherApplicationTests {
     }
 
 
-    @Autowired
-    UserRepository userRepository;
-
-    @Autowired
-    UserAtRepository userAtRepository;
-
-    @Autowired
-    UserOnRepository userOnRepository;
-
-    @Autowired
-    UserInRepository userInRepository;
-
-
-    @Test
-    void tst10(){
-
-        User u = new User();
-        u.setName("NAME");
-        u = userRepository.save(u);
-
-        UserAt ua = new UserAt();
-        ua.setUser(u);
-        ua.setValue(555);
-        ua = userAtRepository.save(ua);
-
-        UserAt ua2 = new UserAt();
-        ua2.setUser(u);
-        ua2.setValue(777);
-        ua2 = userAtRepository.save(ua2);
-
-        UserAt ua3 = new UserAt();
-        ua3.setUser(u);
-        ua3.setValue(333);
-        ua3 = userAtRepository.save(ua3);
-
-        UserOn uo = new UserOn();
-        uo.setValue(1);
-        uo.setUser(u);
-        uo = userOnRepository.save(uo);
-
-        UserOn uo1 = new UserOn();
-        uo1.setValue(1);
-        uo1.setUser(u);
-        uo1 = userOnRepository.save(uo1);
-
-        UserOn uo2 = new UserOn();
-        uo2.setValue(1);
-        uo2.setUser(u);
-        uo2 = userOnRepository.save(uo2);
-
-        UserIn ui = new UserIn();
-        ui.setValue(1111);
-        ui.setUser(u);
-        ui = userInRepository.save(ui);
-
-        UserIn ui1 = new UserIn();
-        ui1.setValue(2222);
-        ui1.setUser(u);
-        ui1 = userInRepository.save(ui1);
 
 
 
-    }
 
-    @Test
-//    @Transactional
-    void tst11(){
-        User u = userRepository.findById(202L).orElse(null);
-        System.out.println(u.getName());
-    }
 
 
 

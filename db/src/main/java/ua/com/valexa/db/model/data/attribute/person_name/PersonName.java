@@ -39,8 +39,8 @@ public class PersonName extends Attribute {
     @Column(name = "no_vowels_hash")
     private String noVowelsHash;
 
-    @OneToMany(mappedBy = "personName")
-    private Set<PersonNameLink> personNameLinks = new HashSet<>();
+//    @OneToMany(mappedBy = "personName")
+//    private Set<PersonNameLink> personNameLinks = new HashSet<>();
 
     @Override
     public String toString() {
