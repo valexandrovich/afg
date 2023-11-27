@@ -9,17 +9,16 @@ import java.util.Objects;
 import java.util.UUID;
 
 @Entity
-@Table(schema = "data", name = "inn_link"
-        , indexes = {
+@Table(schema = "data", name = "inn_link", indexes = {
         @Index(name = "inn_link__private_person_id__index", columnList = "private_person_id"),
         @Index(name = "inn_link__inn_id__index", columnList = "inn_id")
 },
         uniqueConstraints = {
                 @UniqueConstraint(name = "inn_link__full__uindex", columnNames = {"private_person_id", "inn_id", "source"})
-        }
-        )
+        })
 @Data
 public class InnLink {
+
     @Id
     private UUID id;
 
@@ -56,7 +55,9 @@ public class InnLink {
         return Objects.hash(privatePerson, inn, source);
     }
 
+    //    @PrePersist
     public void generateId() {
         this.id = UUID.nameUUIDFromBytes(toString().getBytes());
     }
+
 }

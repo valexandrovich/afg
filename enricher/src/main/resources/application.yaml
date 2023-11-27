@@ -1,13 +1,14 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/afg_db
+    url: jdbc:postgresql://localhost:5432/afg_db_dev
+#    url: jdbc:postgresql://localhost:5432/afg_db
 #    url: jdbc:postgresql://192.168.50.7:5416/af_guard_db
 #    url: jdbc:postgresql://localhost:5416/af_guard_db
     username: afg_app
     password: 3211
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: update
     show-sql: true
 server:
   port: 9001

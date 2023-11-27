@@ -2,7 +2,6 @@ package ua.com.valexa.db.model.data.attribute;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import ua.com.valexa.db.model.data.tag.TagAttributeLink;
 
 import java.util.ArrayList;
 import java.util.List;

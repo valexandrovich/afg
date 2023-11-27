@@ -2,6 +2,7 @@ package ua.com.valexa.db.model.data.attribute.person_name;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import ua.com.valexa.db.model.data.attribute.Attribute;
 import ua.com.valexa.db.model.enums.LanguageCode;
 
@@ -22,6 +23,7 @@ import java.util.UUID;
         })
 )
 @Data
+@EqualsAndHashCode(of = {"lastName", "firstName","patronymicName","languageCode"})
 public class PersonName extends Attribute {
 //    @Id
 //    private UUID id;
@@ -37,7 +39,7 @@ public class PersonName extends Attribute {
     @Column(name = "no_vowels_hash")
     private String noVowelsHash;
 
-    @OneToMany(mappedBy = "personName", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "personName")
     private Set<PersonNameLink> personNameLinks = new HashSet<>();
 
     @Override
@@ -48,19 +50,7 @@ public class PersonName extends Attribute {
                 languageCode;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        PersonName that = (PersonName) o;
-        return Objects.equals(lastName, that.lastName) && Objects.equals(firstName, that.firstName) && Objects.equals(patronymicName, that.patronymicName) && languageCode == that.languageCode;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(lastName, firstName, patronymicName, languageCode);
-    }
-
+//    @PrePersist
     public void generateId(){
         setId(UUID.nameUUIDFromBytes(toString().getBytes()));
     }

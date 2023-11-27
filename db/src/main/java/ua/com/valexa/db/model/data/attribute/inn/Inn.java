@@ -1,11 +1,7 @@
 package ua.com.valexa.db.model.data.attribute.inn;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
+import jakarta.persistence.*;
 import lombok.Data;
-import ua.com.valexa.db.model.data.attribute.Attribute;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -15,7 +11,11 @@ import java.util.UUID;
         @UniqueConstraint(name = "inn__full__uindex", columnNames = {"code"})
 })
 @Data
-public class Inn extends Attribute {
+public class Inn {
+
+    @Id
+    private UUID id;
+
     @Column(name = "code", length = 15)
     private String code;
 
@@ -39,6 +39,6 @@ public class Inn extends Attribute {
     }
 
     public void generateId(){
-        setId(UUID.nameUUIDFromBytes(toString().getBytes()));
+        this.id = UUID.nameUUIDFromBytes(toString().getBytes());
     }
 }

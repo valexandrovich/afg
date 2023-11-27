@@ -2,44 +2,32 @@ package ua.com.valexa.enricher;
 
 import jakarta.transaction.Transactional;
 import org.checkerframework.checker.units.qual.A;
-import org.hibernate.Hibernate;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Slice;
+import ua.com.valexa.db.model.User;
+import ua.com.valexa.db.model.UserAt;
+import ua.com.valexa.db.model.UserIn;
+import ua.com.valexa.db.model.UserOn;
 import ua.com.valexa.db.model.data.attribute.inn.Inn;
 import ua.com.valexa.db.model.data.attribute.inn.InnLink;
 import ua.com.valexa.db.model.data.attribute.person_name.PersonName;
 import ua.com.valexa.db.model.data.attribute.person_name.PersonNameLink;
 import ua.com.valexa.db.model.data.base_object.PrivatePerson;
-import ua.com.valexa.db.model.data.tag.Tag;
-import ua.com.valexa.db.model.data.tag.TagAttributeLink;
-import ua.com.valexa.db.model.data.tag.TagType;
 import ua.com.valexa.db.model.enums.LanguageCode;
-import ua.com.valexa.db.model.stage.PrivatePersonStageRow;
-import ua.com.valexa.db.model.stage.PrivatePersonStageRowArchive;
-import ua.com.valexa.db.repository.*;
-import ua.com.valexa.db.repository.data.attribute.inn.InnLinkRepository;
-import ua.com.valexa.db.repository.data.attribute.inn.InnRepository;
-import ua.com.valexa.db.repository.data.attribute.person_name.PersonNameLinkRepository;
-import ua.com.valexa.db.repository.data.attribute.person_name.PersonNameRepository;
-import ua.com.valexa.db.repository.data.base_object.PrivatePersonRepository;
-import ua.com.valexa.db.repository.stage.PrivatePersonStageRowArchiveRepository;
-import ua.com.valexa.db.repository.stage.PrivatePersonStageRowRepository;
-import ua.com.valexa.db.service.data.attribute.person_name.PersonNameService;
-import ua.com.valexa.db.service.data.base_object.PrivatePersonService;
+import ua.com.valexa.db.repository.UserAtRepository;
+import ua.com.valexa.db.repository.UserRepository;
+import ua.com.valexa.db.repository.data.*;
+import ua.com.valexa.db.service.PersonNameLinkService;
+import ua.com.valexa.db.service.PersonNameService;
 import ua.com.valexa.db.utils.NoVowelsHashUtils;
-import ua.com.valexa.enricher.service.PrivatePersonStageService;
-import ua.com.valexa.enricher.service.TestService;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
-import java.util.concurrent.CompletableFuture;
+import java.util.UUID;
 
 @SpringBootTest
 class EnricherApplicationTests {
+
 
     @Autowired
     PrivatePersonRepository privatePersonRepository;
@@ -48,16 +36,7 @@ class EnricherApplicationTests {
     PersonNameRepository personNameRepository;
 
     @Autowired
-    PersonNameService personNameService;
-
-    @Autowired
     PersonNameLinkRepository personNameLinkRepository;
-
-    @Autowired
-    PrivatePersonStageRowRepository privatePersonStageRowRepository;
-
-    @Autowired
-    PrivatePersonStageService privatePersonStageService;
 
     @Autowired
     InnRepository innRepository;
@@ -65,386 +44,224 @@ class EnricherApplicationTests {
     @Autowired
     InnLinkRepository innLinkRepository;
 
-    @Autowired
-    TagTypeRepository tagTypeRepository;
+    @Test
+    @Transactional
+    void tst1(){
+        PrivatePerson p =  privatePersonRepository.findById(UUID.fromString("5d58c589-e34c-4f99-bec8-b94de7a22c0b")).orElse(null);
+        System.out.println("p");
+    }
 
-    @Autowired
-    TagRepository tagRepository;
 
-    @Autowired
-    TagAttributeLinkRepository tagAttributeLinkRepository;
 
 
     @Test
-    void tst1() {
+    void fillDevData(){
+
+        PrivatePerson p1 = new PrivatePerson();
+//        p1.generateId();
+
+        PersonName pn1 = new PersonName();
+        pn1.setLastName("БЄЛОЄНКО");
+        pn1.setFirstName("ВАЛЕРІЙ");
+        pn1.setPatronymicName("ОЛЕКСАНДРОВИЧ");
+        pn1.setLanguageCode(LanguageCode.UA);
+        pn1.setNoVowelsHash(NoVowelsHashUtils.calcNoVowelsHash(pn1));
+        pn1.generateId();
+
+        PersonNameLink pnl1 = new PersonNameLink();
+        pnl1.setPrivatePerson(p1);
+        pnl1.setPersonName(pn1);
+        pnl1.setSource("UNIT");
+        pnl1.setActualDate(LocalDateTime.now());
+        pnl1.setIsActive(true);
+//        pnl1.generateId();
+
+
+        PersonName pn2 = new PersonName();
+        pn2.setLastName("БЕЛОЕНКО");
+        pn2.setFirstName("ВАЛЕРИЙ");
+        pn2.setPatronymicName("АЛЕКСАНДРОВИЧ");
+        pn2.setLanguageCode(LanguageCode.RU);
+        pn2.setNoVowelsHash(NoVowelsHashUtils.calcNoVowelsHash(pn2));
+//        pn2.generateId();
+
+        PersonNameLink pnl2 = new PersonNameLink();
+        pnl2.setPrivatePerson(p1);
+        pnl2.setPersonName(pn2);
+        pnl2.setSource("UNIT");
+        pnl2.setActualDate(LocalDateTime.now());
+        pnl2.setIsActive(true);
+//        pnl2.generateId();
+
+        personNameRepository.save(pn1);
+        personNameRepository.save(pn2);
+
+        privatePersonRepository.save(p1);
+
+
+        personNameLinkRepository.save(pnl1);
+        personNameLinkRepository.save(pnl2);
+
+        System.out.println("");
+    }
+
+    @Autowired
+    PersonNameService personNameService;
+
+    @Autowired
+    PersonNameLinkService personNameLinkService;
+    @Test
+    void tst8(){
         PrivatePerson p = new PrivatePerson();
-        p.setId(UUID.fromString("a26cb6ef-d8ed-4ae3-9025-b85cde8f2a27"));
-        p = privatePersonRepository.save(p);
+//        p.generateId();
+        p.setId(UUID.fromString("77a6a232-7d0b-439e-8820-3947b400efea"));
+        privatePersonRepository.save(p);
 
-        PersonName pn = new PersonName();
-        pn.setLastName("БЄЛОЄНКО");
-        pn.setFirstName("ВАЛЕРІЙ");
-        pn.setPatronymicName("ОЛЕКСАНДРОВИЧ");
-        pn.setLanguageCode(LanguageCode.UA);
-        pn.setNoVowelsHash("БЛНКВЛРЛКСНДРВЧ");
-        pn.generateId();
+        PersonName pn1 = new PersonName();
+        pn1.setLastName("БЄЛОЄНКО");
+        pn1.setFirstName("ВАЛЕРІЙ");
+        pn1.setPatronymicName("ОЛЕКСАНДРОВИЧ");
+        pn1.setLanguageCode(LanguageCode.UA);
+        pn1.setNoVowelsHash(NoVowelsHashUtils.calcNoVowelsHash(pn1));
+        pn1.generateId();
+        personNameRepository.save(pn1);
 
-//        personNameRepository.save(pn);
-
-        PersonNameLink pnl = new PersonNameLink();
-        pnl.setPrivatePerson(p);
-        pnl.setPersonName(pn);
-        pnl.setSource("UNIT");
-        pnl.setActualDate(LocalDateTime.now());
-        pnl.generateId();
-
-        personNameLinkRepository.save(pnl);
-
-        Inn inn = new Inn();
-        inn.setCode("3435603818");
-        inn.generateId();
+        PersonName pn2 = new PersonName();
+        pn2.setLastName("БЕЛОЕНКО");
+        pn2.setFirstName("ВАЛЕРИЙ");
+        pn2.setPatronymicName("АЛЕКСАНДРОВИЧ");
+        pn2.setLanguageCode(LanguageCode.RU);
+        pn2.setNoVowelsHash(NoVowelsHashUtils.calcNoVowelsHash(pn2));
+        pn2.generateId();
+        personNameRepository.save(pn2);
 
 
-        InnLink il = new InnLink();
-        il.setPrivatePerson(p);
-        il.setInn(inn);
-        il.setActualDate(LocalDateTime.now());
-        il.setSource("UNIT");
-        il.generateId();
+        PersonNameLink pnl1 = new PersonNameLink();
+        pnl1.setSource("UNIT");
+        pnl1.setPrivatePerson(p);
+        pnl1.setPersonName(pn1);
+        pnl1.setActualDate(LocalDateTime.now());
+        pnl1.setIsActive(true);
+        pnl1.generateId();
+        personNameLinkRepository.save(pnl1);
 
-        innLinkRepository.save(il);
+        PersonNameLink pnl2 = new PersonNameLink();
+        pnl2.setSource("UNIT");
+        pnl2.setPrivatePerson(p);
+        pnl2.setPersonName(pn2);
+        pnl2.setActualDate(LocalDateTime.now());
+        pnl2.setIsActive(true);
+        pnl2.generateId();
+        personNameLinkRepository.save(pnl2);
 
+        Inn inn1 = new Inn();
+        inn1.setCode("3435603818");
+        inn1.generateId();
+        innRepository.save(inn1);
 
-        TagType tt1 = new TagType();
-        tt1.setId("TT1");
-        tt1.setDescription("TAG_1_DESC");
-        tagTypeRepository.save(tt1);
+        InnLink innLink1 = new InnLink();
+        innLink1.setInn(inn1);
+        innLink1.setPrivatePerson(p);
+        innLink1.setSource("UNIT");
+        innLink1.setActualDate(LocalDateTime.now());
+        innLink1.generateId();
+        innLinkRepository.save(innLink1);
 
-        TagType tt2 = new TagType();
-        tt2.setId("TT2");
-        tt2.setDescription("TAG_2_DESC");
-        tagTypeRepository.save(tt2);
+        Inn inn2 = new Inn();
+        inn2.setCode("77777777");
+        inn2.generateId();
+        innRepository.save(inn2);
 
-        Tag t = new Tag();
-        t.setId(UUID.randomUUID());
-        t.setStartAt(LocalDate.now());
-        t.setTagType(tt1);
-        tagRepository.save(t);
-
-
-        TagAttributeLink tal = new TagAttributeLink();
-        tal.setAttribute(inn);
-        tal.setTag(t);
-        tal.setId(UUID.randomUUID());
-        tagAttributeLinkRepository.save(tal);
-
-
+        InnLink innLink2 = new InnLink();
+        innLink2.setInn(inn2);
+        innLink2.setPrivatePerson(p);
+        innLink2.setSource("UNIT");
+        innLink2.setActualDate(LocalDateTime.now());
+        innLink2.generateId();
+        innLinkRepository.save(innLink2);
     }
+
+    @Test
+    @Transactional
+    void tst9(){
+        PrivatePerson p = privatePersonRepository.findById(UUID.fromString("77a6a232-7d0b-439e-8820-3947b400efea")).orElse(null);
+        System.out.println(p);
+    }
+
+
+    @Autowired
+    UserRepository userRepository;
+
+    @Autowired
+    UserAtRepository userAtRepository;
+
+    @Autowired
+    UserOnRepository userOnRepository;
+
+    @Autowired
+    UserInRepository userInRepository;
 
 
     @Test
-    void tstLoop() {
+    void tst10(){
 
-        int batchSize = 1000;
+        User u = new User();
+        u.setName("NAME");
+        u = userRepository.save(u);
 
-        for (int i = 1; i <= 1000; i++) {
+        UserAt ua = new UserAt();
+        ua.setUser(u);
+        ua.setValue(555);
+        ua = userAtRepository.save(ua);
 
-            long startTime = System.currentTimeMillis();
-            tst2(batchSize);
-            long endTime = System.currentTimeMillis();
-            long elapsedTimeMillis = endTime - startTime;
+        UserAt ua2 = new UserAt();
+        ua2.setUser(u);
+        ua2.setValue(777);
+        ua2 = userAtRepository.save(ua2);
 
-            // Convert milliseconds to minutes, seconds, and milliseconds
-            long minutes = (elapsedTimeMillis / 1000) / 60;
-            long seconds = (elapsedTimeMillis / 1000) % 60;
-            long milliseconds = elapsedTimeMillis % 1000;
-            System.out.printf("I( " + (i * batchSize) + " ): " + i + " :   %02d:%02d:%03d\n", minutes, seconds, milliseconds);
+        UserAt ua3 = new UserAt();
+        ua3.setUser(u);
+        ua3.setValue(333);
+        ua3 = userAtRepository.save(ua3);
 
-        }
-    }
+        UserOn uo = new UserOn();
+        uo.setValue(1);
+        uo.setUser(u);
+        uo = userOnRepository.save(uo);
 
+        UserOn uo1 = new UserOn();
+        uo1.setValue(1);
+        uo1.setUser(u);
+        uo1 = userOnRepository.save(uo1);
 
-    @Autowired
-    PrivatePersonStageRowArchiveRepository privatePersonStageRowArchiveRepository;
+        UserOn uo2 = new UserOn();
+        uo2.setValue(1);
+        uo2.setUser(u);
+        uo2 = userOnRepository.save(uo2);
 
-    @Test
-    void tst2(Integer batchSize) {
+        UserIn ui = new UserIn();
+        ui.setValue(1111);
+        ui.setUser(u);
+        ui = userInRepository.save(ui);
 
-        long startTime = System.currentTimeMillis();
-        Slice<PrivatePersonStageRow> rows = privatePersonStageRowRepository.findBy(PageRequest.of(0, batchSize));
-        long endTime = System.currentTimeMillis();
-        long elapsedTimeMillis = endTime - startTime;
-        long minutes = (elapsedTimeMillis / 1000) / 60;
-        long seconds = (elapsedTimeMillis / 1000) % 60;
-        long milliseconds = elapsedTimeMillis % 1000;
-        System.out.printf( "FETCHING STAGE"      + " :   %02d:%02d:%03d\n", minutes, seconds, milliseconds);
+        UserIn ui1 = new UserIn();
+        ui1.setValue(2222);
+        ui1.setUser(u);
+        ui1 = userInRepository.save(ui1);
 
-
-        if (rows.hasContent()) {
-
-            List<PrivatePersonStageRowArchive> archiveRows = new ArrayList<>();
-
-            startTime = System.currentTimeMillis();
-            privatePersonStageService.enrichRows(rows.getContent());
-            endTime = System.currentTimeMillis();
-             elapsedTimeMillis = endTime - startTime;
-             minutes = (elapsedTimeMillis / 1000) / 60;
-             seconds = (elapsedTimeMillis / 1000) % 60;
-             milliseconds = elapsedTimeMillis % 1000;
-            System.out.printf( "ENRICH ROWS"      + " :   %02d:%02d:%03d\n", minutes, seconds, milliseconds);
-
-            for (PrivatePersonStageRow row : rows.getContent()) {
-                archiveRows.add(new PrivatePersonStageRowArchive(row));
-            }
-            startTime = System.currentTimeMillis();
-            privatePersonStageRowArchiveRepository.saveAll(archiveRows);
-            endTime = System.currentTimeMillis();
-            elapsedTimeMillis = endTime - startTime;
-            minutes = (elapsedTimeMillis / 1000) / 60;
-            seconds = (elapsedTimeMillis / 1000) % 60;
-            milliseconds = elapsedTimeMillis % 1000;
-            System.out.printf( "SAVE ARCHIVE ROWS"      + " :   %02d:%02d:%03d\n", minutes, seconds, milliseconds);
-
-            startTime = System.currentTimeMillis();
-            privatePersonStageRowRepository.deleteAll(rows.getContent());
-            endTime = System.currentTimeMillis();
-            elapsedTimeMillis = endTime - startTime;
-            minutes = (elapsedTimeMillis / 1000) / 60;
-            seconds = (elapsedTimeMillis / 1000) % 60;
-            milliseconds = elapsedTimeMillis % 1000;
-            System.out.printf( "DELETE STAGE ROWS"      + " :   %02d:%02d:%03d\n", minutes, seconds, milliseconds);
-
-
-        }
 
 
     }
-
-    @Autowired
-    PrivatePersonService privatePersonService;
-
-    @Autowired
-    TestService testService;
 
     @Test
 //    @Transactional
-    void tst3() {
-
-        List<PrivatePersonStageRow> rows = new ArrayList<>();
-
-//        rows.add(rowNameUaInn());
-
-        rows.add(rowFull());
-//        rows.add(rowTemp());
-//        rows.add(rowUaNameInn());
-//        rows.add(rowUaNameBirthday());
-        privatePersonStageService.enrichRows(rows);
-
-
-    }
-
-    PrivatePersonStageRow rowTemp(){
-        PrivatePersonStageRow row = new PrivatePersonStageRow();
-        row.setId(UUID.randomUUID());
-        row.setSource("UNIT");
-
-//        row.setLastNameUa("БІЛОЄНКО");
-//        row.setFirstNameUa("ВOЛЕРІЙ");
-//        row.setPatronymicNameUa("АЛЕКСАНДРОВИЧ");
-
-        row.setLastNameRu("БЕЛОЕНКО");
-        row.setFirstNameRu("ВАЛЕРИЙ");
-        row.setPatronymicNameRu("АЛЕКСАНДРОВИЧ");
-
-//        row.setLastNameEn("BIELOIENKO");
-//        row.setFirstNameEn("VALERII");
-//        row.setPatronymicNameEn("OLEKSANDROVICH");
-
-//        row.setBirthday(LocalDate.of(1994,1,23));
-
-//        row.setBirthplace("УКРАЇНА, ДОНЕЦЬКА ОБЛ., М. ГОРЛІВКА");
-
-        row.setInn("3435603818");
-
-        row.setLocalPassportSerial("AA");
-        row.setLocalPassportNumber("123456");
-
-//        row.setAddressSimple("УКРАЇНА, ДОНЕЦЬКА ОБЛ., М. ГОРЛІВКА, ВУЛ. ХАСАНІВСЬКА, Б. 10, КВ. 3");
-
-//        row.setAddressCountry("УКРАЇНА");
-//        row.setAddressRegion("ДОНЕЦЬКА");
-//        row.setAddressCounty("ЯСИНУВАТСЬКИЙ");
-//        row.setAddressCityType("М");
-//        row.setAddressCity("ГОРЛОІВКА");
-//        row.setAddressStreetType("ВУЛ");
-//        row.setAddressStreet("ХАСАНІВСЬКА");
-//        row.setAddressBuildingNumber("10");
-//        row.setAddressBuildingLetter("А");
-//        row.setAddressBuildingPart("1");
-//        row.setAddressApartment("3");
-
-        return row;
-
-
-
-    }
-
-    PrivatePersonStageRow rowFull(){
-        PrivatePersonStageRow row = new PrivatePersonStageRow();
-        row.setId(UUID.randomUUID());
-        row.setSource("UNIT");
-
-        row.setLastNameUa("БЄЛОЄНКО");
-        row.setFirstNameUa("ВАЛЕРІЙ");
-        row.setPatronymicNameUa("ОЛЕКСАНДРОВИЧ");
-
-        row.setLastNameRu("БЕЛОЕНКО");
-        row.setFirstNameRu("ВАЛЕРИЙ");
-        row.setPatronymicNameRu("АЛЕКСАНДРОВИЧ");
-
-        row.setLastNameEn("BIELOIENKO");
-        row.setFirstNameEn("VALERII");
-        row.setPatronymicNameEn("OLEKSANDROVICH");
-
-        row.setBirthday(LocalDate.of(1994,1,23));
-
-        row.setBirthplace("УКРАЇНА, ДОНЕЦЬКА ОБЛ., М. ГОРЛІВКА");
-
-        row.setInn("3435603818");
-
-        row.setLocalPassportSerial("AA");
-        row.setLocalPassportNumber("123456");
-
-        row.setAddressSimple("УКРАЇНА, ДОНЕЦЬКА ОБЛ., М. ГОРЛІВКА, ВУЛ. ХАСАНІВСЬКА, Б. 10, КВ. 3");
-
-        row.setAddressCountry("УКРАЇНА");
-        row.setAddressRegion("ДОНЕЦЬКА");
-        row.setAddressCounty("ЯСИНУВАТСЬКИЙ");
-        row.setAddressCityType("М");
-        row.setAddressCity("ГОРЛОІВКА");
-        row.setAddressStreetType("ВУЛ");
-        row.setAddressStreet("ХАСАНІВСЬКА");
-        row.setAddressBuildingNumber("10");
-        row.setAddressBuildingLetter("А");
-        row.setAddressBuildingPart("1");
-        row.setAddressApartment("3");
-
-        return row;
-
-
-
-    }
-
-
-    PrivatePersonStageRow rowNameUaInn(){
-        PrivatePersonStageRow row = new PrivatePersonStageRow();
-        row.setId(UUID.randomUUID());
-        row.setSource("UNIT");
-
-        row.setLastNameUa("БЄЛОЄНКО");
-        row.setFirstNameUa("ВАЛЕРІЙ");
-        row.setPatronymicNameUa("ОЛЕКСАНДРОВИЧ");
-
-
-//        row.setBirthday(LocalDate.of(1994,1,23));
-
-
-        row.setInn("3435603818");
-
-
-
-        return row;
-
-
-
-    }
-
-    PrivatePersonStageRow rowUaNameInn(){
-        PrivatePersonStageRow row = new PrivatePersonStageRow();
-        row.setId(UUID.randomUUID());
-        row.setSource("UNIT");
-        row.setLastNameUa("БЄЛОЄНКО");
-        row.setFirstNameUa("ВАЛЕРІЙ");
-        row.setPatronymicNameUa("ОЛЕКСАНДРОВИЧ");
-        row.setInn("3435603818");
-        return row;
-    }
-
-    PrivatePersonStageRow rowUaNameBirthday(){
-        PrivatePersonStageRow row = new PrivatePersonStageRow();
-        row.setId(UUID.randomUUID());
-        row.setSource("UNIT");
-        row.setLastNameUa("БЄЛОЄНКО");
-        row.setFirstNameUa("ВАЛЕРІЙ");
-        row.setPatronymicNameUa("ОЛЕКСАНДРОВИЧ");
-        row.setBirthday(LocalDate.of(1994,1,23));
-        return row;
+    void tst11(){
+        User u = userRepository.findById(202L).orElse(null);
+        System.out.println(u.getName());
     }
 
 
 
-    @Test
-    void tst5(){
-        PersonName pn = new PersonName();
-        pn.setLastName("БЄЛОЄНКО");
-        pn.setFirstName("ВАЛЕРІЙ");
-        pn.setPatronymicName("ОЛЕКСАНДРОВИЧ");
-        pn.setLanguageCode(LanguageCode.UA);
-        pn.setNoVowelsHash(NoVowelsHashUtils.calcNoVowelsHash(pn));
-        pn.generateId();
-
-        System.out.println(pn.getId());
-        System.out.println(pn);
-    }
-
-
-    @Test
-    void tst6(){
-        int batchSize = 1000;
-        Slice<PrivatePersonStageRow> rows = privatePersonStageRowRepository.findBy(PageRequest.of(0, batchSize));
-
-        System.out.println(rows.getContent().size());
-
-
-        Set<String> hashes = new HashSet<>();
-
-        for (PrivatePersonStageRow row : rows.getContent()){
-
-            if (row.hasUaName()){
-                PersonName pn = new PersonName();
-                pn.setLanguageCode(LanguageCode.UA);
-                pn.setLastName(row.getLastNameUa());
-                pn.setFirstName(row.getFirstNameUa());
-                pn.setPatronymicName(row.getPatronymicNameUa());
-                pn.setNoVowelsHash(NoVowelsHashUtils.calcNoVowelsHash(pn));
-                hashes.add(pn.getNoVowelsHash());
-            }
-
-            if (row.hasRuName()){
-                PersonName pn = new PersonName();
-                pn.setLanguageCode(LanguageCode.RU);
-                pn.setLastName(row.getLastNameRu());
-                pn.setFirstName(row.getFirstNameRu());
-                pn.setPatronymicName(row.getPatronymicNameRu());
-                pn.setNoVowelsHash(NoVowelsHashUtils.calcNoVowelsHash(pn));
-                hashes.add(pn.getNoVowelsHash());
-            }
-        }
-
-        System.out.println("HASHES: " + hashes.size());
-
-        CompletableFuture<Set<PersonName>> personNameFuture =  personNameService.findByNoVowelsHashes(hashes);
-        Set<PersonName> personNames = personNameFuture.join();
-        System.out.println("PERSON NAMES CANDIDATES: " + personNames.size());
-
-//        CompletableFuture<Set<PrivatePerson>> allCandidatesFuture =  privatePersonService.findCandidatesByNoVowelsHashes(hashes);
-//        Set<PrivatePerson> allCandidates = allCandidatesFuture.join();
-//
-//        System.out.println("CANDIDATES: " + allCandidates.size());
-
-
-
-    }
 
 
 

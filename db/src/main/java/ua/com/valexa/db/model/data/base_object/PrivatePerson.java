@@ -2,7 +2,8 @@ package ua.com.valexa.db.model.data.base_object;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import ua.com.valexa.db.model.data.attribute.birthday.BirthdayLink;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import ua.com.valexa.db.model.data.attribute.inn.InnLink;
 import ua.com.valexa.db.model.data.attribute.person_name.PersonNameLink;
 
@@ -14,37 +15,37 @@ import java.util.UUID;
 @Entity
 @Table(schema = "data", name = "private_person")
 @Data
+@EqualsAndHashCode(of = {"id"})
+
+//@NamedEntityGraph(
+//        name = "private-person-names",
+//        attributeNodes = {
+//                @NamedAttributeNode("personNameLinks"),
+//        }
+//)
+
 public class PrivatePerson {
+
     @Id
     private UUID id;
 
-    @OneToMany(mappedBy = "privatePerson", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "privatePerson")
     private Set<PersonNameLink> personNameLinks = new HashSet<>();
 
-    @OneToMany(mappedBy = "privatePerson", fetch = FetchType.EAGER)
-    private Set<BirthdayLink> birthdayLinks = new HashSet<>();
 
-    @OneToMany(mappedBy = "privatePerson", fetch = FetchType.EAGER)
-    private Set<InnLink> innLinks = new HashSet<>();
+//    @OneToMany(mappedBy = "privatePerson")
+//    private Set<InnLink> innLinks = new HashSet<>();
 
     @Override
     public String toString() {
         return id.toString();
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        PrivatePerson that = (PrivatePerson) o;
-        return Objects.equals(id, that.id);
-    }
+//    public PrivatePerson(){
+//        this.id = UUID.randomUUID();
+//    }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
-    }
-
+//    @PrePersist
     public void generateId(){
         this.id = UUID.randomUUID();
     }

@@ -54,7 +54,7 @@ public class PersonNameLink {
     public int hashCode() {
         return Objects.hash(privatePerson, personName, source);
     }
-
+//    @PrePersist
     public void generateId() {
         this.id = UUID.nameUUIDFromBytes(toString().getBytes());
     }
