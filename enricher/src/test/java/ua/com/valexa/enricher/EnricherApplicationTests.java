@@ -400,7 +400,7 @@ class EnricherApplicationTests {
 
     @Test
     void tst6(){
-        int batchSize = 1000;
+        int batchSize = 2;
         Slice<PrivatePersonStageRow> rows = privatePersonStageRowRepository.findBy(PageRequest.of(0, batchSize));
 
         System.out.println(rows.getContent().size());
@@ -433,19 +433,29 @@ class EnricherApplicationTests {
 
         System.out.println("HASHES: " + hashes.size());
 
+
+
         CompletableFuture<Set<PersonName>> personNameFuture =  personNameService.findByNoVowelsHashes(hashes);
         Set<PersonName> personNames = personNameFuture.join();
         System.out.println("PERSON NAMES CANDIDATES: " + personNames.size());
 
-//        CompletableFuture<Set<PrivatePerson>> allCandidatesFuture =  privatePersonService.findCandidatesByNoVowelsHashes(hashes);
-//        Set<PrivatePerson> allCandidates = allCandidatesFuture.join();
-//
-//        System.out.println("CANDIDATES: " + allCandidates.size());
 
 
 
     }
 
+
+    @Test
+    void tst10(){
+        Set<String> hashes = new HashSet<>();
+        hashes.add("КРДКВТСНТКЛ");
+
+        CompletableFuture<Set<PersonName>> personNameFuture =  personNameService.findByNoVowelsHashes(hashes);
+        Set<PersonName> personNames = personNameFuture.join();
+        System.out.println("PERSON NAMES CANDIDATES: " + personNames.size());
+
+
+    }
 
 
 
