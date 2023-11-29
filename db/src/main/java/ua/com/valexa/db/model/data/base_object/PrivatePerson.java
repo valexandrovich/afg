@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.GenericGenerator;
 import ua.com.valexa.db.model.data.attribute.inn.InnLink;
 import ua.com.valexa.db.model.data.attribute.person_name.PersonNameLink;
 
@@ -16,22 +17,16 @@ import java.util.UUID;
 @Table(schema = "data", name = "private_person")
 @Data
 @EqualsAndHashCode(of = {"id"})
-
-//@NamedEntityGraph(
-//        name = "private-person-names",
-//        attributeNodes = {
-//                @NamedAttributeNode("personNameLinks"),
-//        }
-//)
-
 public class PrivatePerson {
 
     @Id
+//    @GeneratedValue(generator = "UUID")
+//    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+//    @Column(updatable = false, nullable = false)
     private UUID id;
 
     @OneToMany(mappedBy = "privatePerson")
     private Set<PersonNameLink> personNameLinks = new HashSet<>();
-
 
 //    @OneToMany(mappedBy = "privatePerson")
 //    private Set<InnLink> innLinks = new HashSet<>();
@@ -40,10 +35,6 @@ public class PrivatePerson {
     public String toString() {
         return id.toString();
     }
-
-//    public PrivatePerson(){
-//        this.id = UUID.randomUUID();
-//    }
 
 //    @PrePersist
     public void generateId(){

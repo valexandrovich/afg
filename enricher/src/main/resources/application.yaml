@@ -10,8 +10,19 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+    properties:
+      hibernate:
+        jdbc:
+          batch_size: 1000
+          batch_versioned_data: true
+        order_updates: true
+        order_inserts: true
+        generate_statistics: true
 server:
   port: 9001
+
+
+
 #  logging:
 #    level:
 #      org.hibernate.SQL: OFF

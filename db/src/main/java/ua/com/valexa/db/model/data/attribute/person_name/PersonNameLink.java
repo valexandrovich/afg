@@ -22,10 +22,10 @@ public class PersonNameLink {
     @Id
     private UUID id;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "private_person_id", foreignKey = @ForeignKey(name = "person_name_link__private_person__fk"))
     private PrivatePerson privatePerson;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "person_name_id", foreignKey = @ForeignKey(name = "person_name_link__person_name__fk"))
     private PersonName personName;
     @Column(name = "actual_date")
@@ -54,7 +54,7 @@ public class PersonNameLink {
     public int hashCode() {
         return Objects.hash(privatePerson, personName, source);
     }
-//    @PrePersist
+    @PrePersist
     public void generateId() {
         this.id = UUID.nameUUIDFromBytes(toString().getBytes());
     }
