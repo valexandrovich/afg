@@ -147,7 +147,7 @@ class EnricherApplicationTests {
 
         int batchSize = 1000;
 
-        for (int i = 1; i <= 1000; i++) {
+        for (int i = 1; i <= 1; i++) {
 
             long startTime = System.currentTimeMillis();
             tst2(batchSize);
@@ -185,7 +185,7 @@ class EnricherApplicationTests {
             List<PrivatePersonStageRowArchive> archiveRows = new ArrayList<>();
 
             startTime = System.currentTimeMillis();
-            privatePersonStageService.enrichRows(rows.getContent());
+            privatePersonStageService.enrichRows2(rows.getContent());
             endTime = System.currentTimeMillis();
              elapsedTimeMillis = endTime - startTime;
              minutes = (elapsedTimeMillis / 1000) / 60;

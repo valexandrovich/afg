@@ -93,6 +93,12 @@ public class PrivatePersonStageService {
     @Autowired
     LocalPassportLinkService localPassportLinkService;
 
+
+    @Transactional
+    public void enrichRows2(List<PrivatePersonStageRow> rows) {
+        System.out.println(rows.size());
+    }
+
     @Transactional
     public void enrichRows(List<PrivatePersonStageRow> rows) {
         Set<PrivatePerson> personsToSave = new HashSet<>();
